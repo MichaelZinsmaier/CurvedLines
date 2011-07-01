@@ -74,6 +74,7 @@ _____________________________________________________
 
 /* 
  *  v0.1   initial commit
+ *  v0.15  negative values should work now (outcommented a negative -> 0 hook hope it does no harm)
  * 
  * 
  */
@@ -327,9 +328,9 @@ _____________________________________________________
                var b = (xnew[j] - xdata[min]) / h;
 
                ynew[j] = a * ydata[min] + b * ydata[max] + ((a * a * a - a) * y2[min] + (b * b * b - b) * y2[max]) * (h * h) / 6;
-               if (ynew[j] < 0.01){
-                   ynew[j] = 0;
-               }
+//               if (ynew[j] < 0.01){
+//                   ynew[j] = 0;
+//               }
                result.push(xnew[j]);
                result.push(ynew[j]);
             }

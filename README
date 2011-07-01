@@ -1,0 +1,7 @@
+CurvedLines is a plugin for flot, which displays lines in a smooth curved way. This is achieved by adding additional points in between the "real" data points.
+
+The plugin is based on nergal.dev's work and gives you an option to display curved lines. I further extended the code with a 2nd mode, which forces the lines to have their minima/maxima on the original data points. 
+
+Feel free to add additional features and correct errors.
+
+Regards Michael

@@ -86,6 +86,8 @@ _____________________________________________________
     var options = { series: { curvedLines: {  active: false,
     										  show: false,
     										  fit: false,
+    										  fill: false,
+    										  fillColor: null,
     										  lineWidth: 2,
     										  curvePointFactor: 20,
     										  fitPointDist: 0.0001
@@ -122,11 +124,17 @@ _____________________________________________________
             		 ctx.translate(offset.left, offset.top);
                      ctx.lineJoin = "round";
 			         ctx.strokeStyle = series.color;
-			         ctx.lineWidth = series.curvedLines.lineWidth;
-            
+                     if(series.curvedLines.fill) {
+                         var fillColor = series.curvedLines.fillColor == null ? series.color : series.curvedLines.fillColor;
+                          var c = $.color.parse(fillColor);
+                          c.a = typeof fill == "number" ? fill : 0.4;
+                          c.normalize();
+			         ctx.fillStyle = c.toString();
+                     }
+			      ctx.lineWidth = series.curvedLines.lineWidth;
         	         
         		     var points = calculateCurvePoints(series.data, series.curvedLines);
-      		         plotLine(ctx, points, axisx, axisy);     		         
+      		         plotLine(ctx, points, axisx, axisy, series.curvedLines.fill);     		         
       		         ctx.restore();	
         		}
             }
@@ -135,13 +143,14 @@ _____________________________________________________
         
         //nearly the same as in the core library
         //only ps is adjusted to 2
-		function plotLine(ctx, points, axisx, axisy) {
+		function plotLine(ctx, points, axisx, axisy, fill) {
 			
 			var ps = 2;
             var prevx = null;
             var prevy = null;
+            var firsty = 0;
 
-            ctx.beginPath();        	
+            ctx.beginPath();
             
             for (var i = ps; i < points.length; i += ps) {
                  var x1 = points[i - ps], y1 = points[i - ps + 1];
@@ -208,12 +217,21 @@ _____________________________________________________
                  }
 
                  if (x1 != prevx || y1 != prevy)
-                     ctx.moveTo(axisx.p2c(x1), axisy.p2c(y1));
+                     ctx.lineTo(axisx.p2c(x1), axisy.p2c(y1));
 
+                 if (prevx == null) {
+                     firsty = y2;
+                 }
                  prevx = x2;
                  prevy = y2;
-                 ctx.lineTo(axisx.p2c(x2), axisy.p2c(y2));
+                ctx.lineTo(axisx.p2c(x2), axisy.p2c(y2));
              }
+              if (fill) {
+                  ctx.lineTo(axisx.p2c(axisx.max), axisy.p2c(axisy.min));
+                  ctx.lineTo(axisx.p2c(axisx.min), axisy.p2c(axisy.min));
+                  ctx.lineTo(axisx.p2c(axisx.min), axisy.p2c(firsty));
+                  ctx.fill();
+              }
              ctx.stroke();
 		}
 

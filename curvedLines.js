@@ -59,6 +59,8 @@ _____________________________________________________
 options:
 _____________________________________________________
 
+	fill: 			  bool true => lines get filled
+	fillColor: 		  null or the color that should be used for filling 
 	active:           bool true => plugin can be used
 	show:             bool true => series will be drawn as curved line
 	fit:              bool true => forces the max,mins of the curve to be on the datapoints
@@ -75,6 +77,7 @@ _____________________________________________________
 /* 
  *  v0.1   initial commit
  *  v0.15  negative values should work now (outcommented a negative -> 0 hook hope it does no harm)
+ *  v0.2   added fill option (thanks to monemihir) and multi axis support (thanks to soewono effendi)
  * 
  * 
  */
@@ -109,7 +112,6 @@ _____________________________________________________
         //select the data sets that should be drawn with curved lines and draws them     
         function draw(plot, ctx)  {
         	var series;           
-            var axes = plot.getAxes();
             var sdata = plot.getData();
             var offset = plot.getPlotOffset();
             
@@ -117,8 +119,8 @@ _____________________________________________________
                  series = sdata[i];
                  if (series.curvedLines.show && series.curvedLines.lineWidth > 0) {
                      
-                     axisx = axes.xaxis;
-        			 axisy = axes.yaxis;
+                     axisx = series.xaxis;
+        			 axisy = series.yaxis;
         	        	
 	   	        	 ctx.save();
             		 ctx.translate(offset.left, offset.top);
@@ -366,7 +368,7 @@ _____________________________________________________
         init: init,
         options: options,
         name: 'curvedLines',
-        version: '0.1'
+        version: '0.2'
     });
     
     

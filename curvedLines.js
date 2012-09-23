@@ -35,7 +35,7 @@
  => 1) with large data sets you may get trouble
  => 2) if you want to display the points too, you have to plot them as 2nd data series over the lines
 
- This is version 0.1 of curvedLines so it will probably not work in every case. However
+ This is version 0.3 of curvedLines so it will probably not work in every case. However
  the basic form of use descirbed next works (:
  Feel free to further improve the code
 
@@ -71,7 +71,7 @@
  * v0.1		initial commit
  * v0.15	negative values should work now (outcommented a negative -> 0 hook hope it does no harm)
  * v0.2		added fill option (thanks to monemihir) and multi axis support (thanks to soewono effendi)
- *
+ * v0.3     improved saddle handling and added basic handling of Dates
  *
  */
 
@@ -407,7 +407,7 @@
 		init : init,
 		options : options,
 		name : 'curvedLines',
-		version : '0.2'
+		version : '0.3'
 	});
 
 })(jQuery);

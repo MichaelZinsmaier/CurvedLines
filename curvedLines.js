@@ -37,7 +37,6 @@
 
  This is version 0.1 of curvedLines so it will probably not work in every case. However
  the basic form of use descirbed next works (:
-
  Feel free to further improve the code
 
  ____________________________________________________
@@ -47,33 +46,31 @@
 
  var d1 = [[5,5],[7,3],[9,12]];
 
- var options = { series: { curvedLines: {  active: true }}};
+ var options = { series: { curvedLines: { active: true }}};
 
  $.plot($("#placeholder"), [{data = d1, curvedLines: { show: true}}], options);
-
  _____________________________________________________
 
  options:
  _____________________________________________________
 
- fill: 			  bool true => lines get filled
- fillColor: 		  null or the color that should be used for filling
- active:           bool true => plugin can be used
- show:             bool true => series will be drawn as curved line
- fit:              bool true => forces the max,mins of the curve to be on the datapoints
- lineWidth:        int  width of the line
- curvePointFactor  int  defines how many "virtual" points are used per "real" data point to
- emulate the curvedLines
- fitPointDist:      int  defines the x axis distance of the additional two points that are used
- to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
- "virtual" points if fit is true)
-
+ fill:			   bool 	true => lines get filled
+ fillColor:					null or the color that should be used for filling
+ active:		   bool		true => plugin can be used
+ show:             bool		true => series will be drawn as curved line
+ fit:              bool		true => forces the max,mins of the curve to be on the datapoints
+ lineWidth:        int		width of the line
+ curvePointFactor  int		defines how many "virtual" points are used per "real" data point to
+							emulate the curvedLines
+ fitPointDist:	   int  	defines the x axis distance of the additional two points that are used
+                        	to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
+                        	"virtual" points if fit is true)
  */
 
 /*
- *  v0.1   initial commit
- *  v0.15  negative values should work now (outcommented a negative -> 0 hook hope it does no harm)
- *  v0.2   added fill option (thanks to monemihir) and multi axis support (thanks to soewono effendi)
+ * v0.1		initial commit
+ * v0.15	negative values should work now (outcommented a negative -> 0 hook hope it does no harm)
+ * v0.2		added fill option (thanks to monemihir) and multi axis support (thanks to soewono effendi)
  *
  *
  */
@@ -131,12 +128,43 @@
 						ctx.fillStyle = c.toString();
 					}
 					ctx.lineWidth = series.curvedLines.lineWidth;
+					var points, dataX, dataY, data;
 
-					var points = calculateCurvePoints(series.data, series.curvedLines);
+					//convenience check for x or y values if they are Dates if so apply .getTime()
+					//only check on first value mixing numeric and Date fields in one input array is not allowed
+					if (series.data[0][0] instanceof Date || series.data[0][1] instanceof Date) {
+						data = series.data.map(getTimeFromDate);
+					} else {
+						//default case
+						data = series.data;
+					}
+
+					var points = calculateCurvePoints(data, series.curvedLines);
 					plotLine(ctx, points, axisx, axisy, series.curvedLines.fill);
 					ctx.restore();
 				}
 			}
+		}
+
+		//helper method that convertes Dates to a numeric representation
+		function getTimeFromDate(timeElement) {
+			var xVal = timeElement[0];
+			var yVal = timeElement[1];
+			var ret = new Array;
+
+			if (timeElement[0] instanceof Date) {
+				ret[0] = xVal.getTime();
+			} else {
+				ret[0] = xVal;
+			}
+
+			if (timeElement[1] instanceof Date) {
+				ret[1] = yVal.getTime();
+			} else {
+				ret[1] = yVal;
+			}
+
+			return ret;
 		}
 
 		//nearly the same as in the core library
@@ -231,7 +259,7 @@
 		}
 
 		//no real idea whats going on here code mainly from https://code.google.com/p/flot/issues/detail?id=226
-		//I don't understand what nergal computes here and to be honest I didn't even try
+		//if fit option is selected additional datapoints get inserted before the curve calculations in nergal.dev s code.
 		function calculateCurvePoints(data, curvedLinesOptions) {
 
 			var num = curvedLinesOptions.curvePointFactor * data.length;
@@ -358,4 +386,3 @@
 	});
 
 })(jQuery);
-

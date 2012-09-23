@@ -262,41 +262,66 @@
 		//if fit option is selected additional datapoints get inserted before the curve calculations in nergal.dev s code.
 		function calculateCurvePoints(data, curvedLinesOptions) {
 
-			var num = curvedLinesOptions.curvePointFactor * data.length;
+			var num = curvedLinesOptions.curvePointFactor * data.length;		
 			var xdata = new Array;
 			var ydata = new Array;
+			
+			var X = 0;
+			var Y = 1;
 
 			if (curvedLinesOptions.fit) {
 				//insert a point before and after the "real" data point to force the line
-				//to have a max,min at the data point
+				//to have a max,min at the data point however only if it is a lowest or highest point of the
+				//curve => avoid saddles
 				var neigh = curvedLinesOptions.fitPointDist;
 				var j = 0;
 
 				for (var i = 0; i < data.length; i++) {
 
+					var front = new Array;
+					var back = new Array;
+
 					//smooth front
-					xdata[j] = data[i][0] - 0.1;
-
+					front[X] = data[i][X] - 0.1;
 					if (i > 0) {
-						ydata[j] = data[i-1][1] * neigh + data[i][1] * (1 - neigh);
+						front[Y] = data[i-1][Y] * neigh + data[i][Y] * (1 - neigh);
 					} else {
-						ydata[j] = data[i][1];
+						front[Y] = data[i][Y];
 					}
-					j++;
 
-					xdata[j] = data[i][0];
-					ydata[j] = data[i][1];
-					j++;
 
 					//smooth back
-					xdata[j] = data[i][0] + 0.1;
+					back[X] = data[i][X] + 0.1;
 					if ((i + 1) < data.length) {
-						ydata[j] = data[i+1][1] * neigh + data[i][1] * (1 - neigh);
+						back[Y] = data[i+1][Y] * neigh + data[i][Y] * (1 - neigh);
 					} else {
-						ydata[j] = data[i][1];
+						back[Y] = data[i][Y];
 					}
 
-					j++;
+					//test for a saddle
+					if ((front[Y] <= data[i][Y] && back[Y] <= data[i][Y]) || //max or partial horizontal
+						(front[Y] >= data[i][Y] && back[Y] >= data[i][Y])) {  //min or partial horizontal
+ 					 
+							//add curve points
+							xdata[j] = front[X];
+							ydata[j] = front[Y];
+							j++;
+							
+							xdata[j] = data[i][0];
+							ydata[j] = data[i][1];
+							j++;
+							
+							xdata[j] = back[X];
+							ydata[j] = back[Y];
+							j++;						
+					} else { //saddle
+						//use original point only
+						xdata[j] = data[i][0];
+						ydata[j] = data[i][1];
+						j++;
+					}
+
+
 				}
 			} else {
 				//just use the datapoints

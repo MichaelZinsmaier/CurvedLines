@@ -54,17 +54,18 @@
  options:
  _____________________________________________________
 
- fill:			   bool 	true => lines get filled
- fillColor:					null or the color that should be used for filling
- active:		   bool		true => plugin can be used
- show:             bool		true => series will be drawn as curved line
- fit:              bool		true => forces the max,mins of the curve to be on the datapoints
- lineWidth:        int		width of the line
- curvePointFactor  int		defines how many "virtual" points are used per "real" data point to
-							emulate the curvedLines
- fitPointDist:	   int  	defines the x axis distance of the additional two points that are used
-                        	to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
-                        	"virtual" points if fit is true)
+ fill:             bool   true => lines get filled
+ fillColor:               null or the color that should be used for filling
+ active:           bool   true => plugin can be used
+ show:             bool   true => series will be drawn as curved line
+ fit:              bool   true => forces the max,mins of the curve to be on the datapoints
+ lineWidth:        int    width of the line
+                          curvePointFactor int defines how many "virtual" points are used per "real" data point to
+                          emulate the curvedLines
+ fitPointDist:     int    defines the x axis distance of the additional two points that are used
+                          to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
+                          "virtual" points if fit is true)
+ smoothZero:       bool   true => smooth joining of the curve with the x-axis when displaying values below zero with a y-axis min of zero
  */
 
 /*
@@ -87,7 +88,8 @@
 				fillColor : null,
 				lineWidth : 2,
 				curvePointFactor : 20,
-				fitPointDist : 0.0001
+				fitPointDist : 0.0001,
+				smoothZero: false
 			}
 		}
 	};
@@ -129,7 +131,7 @@
 					}
 					ctx.lineWidth = series.curvedLines.lineWidth;
 					var points, dataX, dataY, data;
-
+					
 					//convenience check for x or y values if they are Dates if so apply .getTime()
 					//only check on first value mixing numeric and Date fields in one input array is not allowed
 					if (series.data[0][0] instanceof Date || series.data[0][1] instanceof Date) {
@@ -138,8 +140,15 @@
 						//default case
 						data = series.data;
 					}
+					
 
-					var points = calculateCurvePoints(data, series.curvedLines);
+					//optional smooth out zero passes
+					if (series.curvedLines.smoothZero) {
+						points = calculateZeroSmoothedCurvePoints(data, series.curvedLines);
+					} else {
+						points = calculateCurvePoints(data, series.curvedLines);
+					}
+
 					plotLine(ctx, points, axisx, axisy, series.curvedLines.fill);
 					ctx.restore();
 				}
@@ -151,21 +160,22 @@
 			var xVal = timeElement[0];
 			var yVal = timeElement[1];
 			var ret = new Array;
-
+			
 			if (timeElement[0] instanceof Date) {
-				ret[0] = xVal.getTime();
+				ret[0] = xVal.getTime(); 
 			} else {
 				ret[0] = xVal;
-			}
-
+			} 
+			
 			if (timeElement[1] instanceof Date) {
 				ret[1] = yVal.getTime();
 			} else {
 				ret[1] = yVal;
 			}
-
+			
 			return ret;
 		}
+
 
 		//nearly the same as in the core library
 		//only ps is adjusted to 2
@@ -256,6 +266,48 @@
 				ctx.fill();
 			}
 			ctx.stroke();
+		}
+		
+		function calculateZeroSmoothedCurvePoints(data, curvedLinesOptions) {
+	 			var data2 = new Array(new Array, new Array);
+				var Y = 1
+				var X = 0
+
+				var j = 0;
+				for (var i = 0; i < data.length; i++) {
+
+					if (data[i][Y] < 0) {
+						if (i > 0 && data[i-1][Y] > 0) {
+							//point before exists and is over zero
+							var x1 = data[i-1][X];
+							var x2 = data[i][X];
+							var y1 = data[i-1][Y];
+							var y2 = data[i][Y];
+							
+							var newX = ((-y1) / ((y2-y1)/(x2-x1))) + x1;
+							data2[j] = new Array(newX,0);
+							j++;
+						}	
+						data2[j] = new Array(data[i][X],0);
+						j++;				
+						if (i < (data.length-1) && data[i+1][Y] > 0) {
+							//point before exists and is over zero
+							var x1 = data[i][X];
+							var x2 = data[i+1][X];
+							var y1 = data[i][Y];
+							var y2 = data[i+1][Y];
+							
+							var newX = ((-y1) / ((y2-y1)/(x2-x1))) + x1;
+							data2[j] = new Array(newX,0);
+							j++;
+						}													
+					} else {
+						data2[j] = data[i];
+						j++;
+					}
+				}
+								
+				return calculateCurvePoints(data2, curvedLinesOptions);			
 		}
 
 		//no real idea whats going on here code mainly from https://code.google.com/p/flot/issues/detail?id=226
@@ -390,9 +442,9 @@
 				var b = (xnew[j] - xdata[min]) / h;
 
 				ynew[j] = a * ydata[min] + b * ydata[max] + ((a * a * a - a) * y2[min] + (b * b * b - b) * y2[max]) * (h * h) / 6;
-				//               if (ynew[j] < 0.01){
-				//                   ynew[j] = 0;
-				//               }
+				// if (ynew[j] < 0.01){
+				// ynew[j] = 0;
+				// }
 				result.push(xnew[j]);
 				result.push(ynew[j]);
 			}

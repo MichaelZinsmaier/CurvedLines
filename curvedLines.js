@@ -121,6 +121,7 @@
 					ctx.lineJoin = "round";
 					ctx.strokeStyle = series.color;
 					if (series.curvedLines.fill) {
+						var fill = series.curvedLines.fill;
 						var fillColor = series.curvedLines.fillColor == null ? series.color : series.curvedLines.fillColor;
 						var c = $.color.parse(fillColor);
 						c.a = typeof fill == "number" ? fill : 0.4;

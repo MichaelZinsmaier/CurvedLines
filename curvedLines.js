@@ -365,6 +365,9 @@
 			xnew[0] = xdata[0];
 			ynew[0] = ydata[0];
 
+			result.push(xnew[0]);
+			result.push(ynew[0]);
+
 			for ( j = 1; j < num; ++j) {
 				xnew[j] = xnew[0] + j * step;
 

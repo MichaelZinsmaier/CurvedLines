@@ -113,15 +113,8 @@
 				if (series.curvedLines.apply == true) {
 					if (series.lines.fill) {
 
-						var pointsTop = calculateCurvePoints(datapoints, series.curvedLines, 1);
-
-						//Make sure we've got a second y point for filling area
-						for (var j = 0; j < datapoints.length; j += 3) {
-							if (data[j] == null)
-								data[j] = series.yaxis.min;
-							//If second y point is null, let it be zero (else no curve !)
-						}
-						var pointsBottom = calculateCurvePoints(datapoints, series.curvedLines, 2);
+						var pointsTop = calculateCurvePoints(datapoints, series.curvedLines, 1)
+						,pointsBottom = calculateCurvePoints(datapoints, series.curvedLines, 2); //flot makes sur for us that we've got a second y point if fill is true !
 
 						//Merge top and bottom curve
 						datapoints.pointsize = 3;

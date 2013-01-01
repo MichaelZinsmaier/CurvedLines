@@ -161,7 +161,7 @@
 							//Redefine datapoints to top only (else it can have null values which will open the cruve !)
 							newSerie.datapoints.points = pointsTop;
 							newSerie.datapoints.pointsize = 2;
-							newSerie.lines.curved = false;
+							newSerie.curvedLines.apply = false;
 							//Don't redo curve point calculation as datapoint is copied to this new serie
 							//We find our series to add the line just after the fill (so other series you wanted above this one will still be)
 							var allSeries = plot.getData();

@@ -134,11 +134,11 @@
 							} else if (pointsTop[i] < pointsBottom[j]) {
 								datapoints.points[k] = pointsTop[i];
 								datapoints.points[k + 1] = pointsTop[i + 1];
-								datapoints.points[k + 2] = null;
+								datapoints.points[k + 2] = k > 0 ? datapoints.points[k-1] : null;
 								i += ps;
 							} else {
 								datapoints.points[k] = pointsBottom[j];
-								datapoints.points[k + 1] = null;
+								datapoints.points[k + 1] = k > 1 ? datapoints.points[k-2] : null;
 								datapoints.points[k + 2] = pointsBottom[j + 1];
 								j += ps;
 							}

@@ -336,9 +336,6 @@
 
 		}//end init
 
-
-		$.plot.plugincurvedLines = true;
-
 		$.plot.plugins.push({
 			init : init,
 			options : options,

@@ -196,7 +196,7 @@
 					//insert a point before and after the "real" data point to force the line
 					//to have a max,min at the data point however only if it is a lowest or highest point of the
 					//curve => avoid saddles
-					var neigh = curvedLinesOptions.fitPointDist;
+					var fpDist = curvedLinesOptions.fitPointDist;
 
 					for (var i = 0; i < points.length; i += ps) {
 
@@ -205,25 +205,28 @@
 						curX = i;
 						curY = i + yPos;
 
-						//smooth front
-						front[X] = points[curX] - 0.1;
+						//add point to front
+						front[X] = points[curX] - fpDist;
+						front[Y] = points[curY];
+						
+						//add point to back
+						back[X] = points[curX] + fpDist;
+						back[Y] = points[curY];
+						
+						
+						//get points (front and back) Y value for saddle test
+						var frontPointY = points[curY];
+						var backPointY = points[curY];
 						if (i >= ps) {
-							front[Y] = points[curY - ps] * neigh + points[curY] * (1 - neigh);
-						} else {
-							front[Y] = points[curY];
+							frontPointY = points[curY - ps];
 						}
-
-						//smooth back
-						back[X] = points[curX] + 0.1;
 						if ((i + ps) < points.length) {
-							back[Y] = points[curY + ps] * neigh + points[curY] * (1 - neigh);
-						} else {
-							back[Y] = points[curY];
+							backPointY = points[curY + ps];
 						}
 
 						//test for a saddle
-						if ((front[Y] <= points[curY] && back[Y] <= points[curY]) || //max or partial horizontal
-						(front[Y] >= points[curY] && back[Y] >= points[curY])) {//min or partial horizontal
+						if ((frontPointY <= points[curY] && backPointY <= points[curY]) || //max or partial horizontal
+						(frontPointY >= points[curY] && backPointY >= points[curY])) {//min or partial horizontal
 
 							//add curve points
 							xdata[j] = front[X];

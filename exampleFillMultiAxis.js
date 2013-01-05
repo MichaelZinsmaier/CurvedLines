@@ -1,7 +1,6 @@
-<div id="fillAndMultiAxis"></div>
-
-<script id="source" language="javascript" type="text/javascript">
 	$(function () {
+    		
+    	//<div id="fillAndMultiAxis" style="width: 800;height: 400;"></div>
     		
     	var d1 = [[20,20], [42,60], [54, 20], [80,80]];
     	var d2 = [[20,700], [80,300]];
@@ -17,8 +16,7 @@
 									
 		$.plot($("#fillAndMultiAxis"), 
 				[
-					{data: d1, curvedLines: { show: true, fill: true, fillColor: "#C3C3C3", lineWidth: 3}}, {data: d1,  points: { show: true }},
-					{data: d2, curvedLines: { show: true, lineWidth: 3}, yaxis:2}, {data: d2,  points: { show: true }, yaxis:2}
+					{data: d1, lines: { show: true, fill: true, fillColor: "#C3C3C3", lineWidth: 3}, curvedLines: {apply:true}}, {data: d1,  points: { show: true }},
+					{data: d2, lines: { show: true, lineWidth: 3}, curvedLines: {apply:true}, yaxis:2}, {data: d2,  points: { show: true }, yaxis:2}
 				], options);
 		});
-</script>

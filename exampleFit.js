@@ -1,7 +1,7 @@
-<div id="flotFit"></div>
-
-<script id="source" language="javascript" type="text/javascript">
 $(function () {
+  
+  //<div id="flotFit" style="width: 800;height: 400;"></div>
+  
    var d1 = [[20,20], [42,60], [54, 30], [80,80]];
   
    var options = { series: {
@@ -13,6 +13,5 @@ $(function () {
 					yaxis: { min:10, max: 90}
    				};
 
-    $.plot($("#flotFit"), [{data: d1, curvedLines: { show: true,  fit: true, fitPointDist: 0.000001, lineWidth: 3}}, {data: d1,  points: { show: true }}], options);
+    $.plot($("#flotFit"), [{data: d1, lines: { show: true, lineWidth: 3}, curvedLines: {apply:true, fit: true, fitPointDist: 0.000001}}, {data: d1,  points: { show: true }}], options);
 });
-</script>

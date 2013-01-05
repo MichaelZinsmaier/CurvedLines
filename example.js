@@ -1,7 +1,7 @@
-<div id="flotOrig"></div>
-
-<script id="source" language="javascript" type="text/javascript">
 $(function () {
+    		
+    	//<div id="flotOrig" style="width: 800;height: 400;"></div>
+	
     		
     	var d1 = [[20,20], [42,60], [54, 20], [80,80]];
   
@@ -14,6 +14,5 @@ $(function () {
 						yaxis: { min:10, max: 90}
    						};
 									
-		$.plot($("#flotOrig"), [{data: d1, curvedLines: { show: true, lineWidth: 3}}, {data: d1,  points: { show: true }}], options);
+		$.plot($("#flotOrig"), [{data: d1, lines: { show: true, lineWidth: 3}, curvedLines: {apply:true}}, {data: d1,  points: { show: true }}], options);
 });
-</script>

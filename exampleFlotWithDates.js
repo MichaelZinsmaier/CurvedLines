@@ -1,6 +1,6 @@
 $(function() {
 
-	//<div id="exampleFlotWithDates" style="width: 800;height: 400;"></div>
+	//<div id="exampleFlotWithDates" style="width: 800px;height: 400px;"></div>
 
 	var d1 = [[new Date(2000, 8, 1, 10), 20], [new Date(2000, 8, 1, 12), 60], [new Date(2000, 8, 1, 14), 30], [new Date(2000, 8, 1, 22), 80]];
 

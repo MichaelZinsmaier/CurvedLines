@@ -104,13 +104,13 @@
 			function processOptions(plot, options) {
 
 				if (options.series.curvedLines.active) {
-					plot.hooks.processDatapoints.push(processDatapoints);
+					plot.hooks.processDatapoints.unshift(processDatapoints);
 				}
 			}
 
 			//only if the plugin is active
 			function processDatapoints(plot, series, datapoints) {
-				if (series.curvedLines.apply == true) {
+				if (series.curvedLines.apply == true && series.originSeries === undefined) {
 					if (series.lines.fill) {
 
 						var pointsTop = calculateCurvePoints(datapoints, series.curvedLines, 1)

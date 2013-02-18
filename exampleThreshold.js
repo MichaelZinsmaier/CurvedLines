@@ -8,7 +8,8 @@ $(function () {
 		var options = { series: {
 							curvedLines: {
 										active: true
-							}
+							},
+							threshold: { below: 40, color: "rgb(0, 0, 0)" }
 						},
 						axis: { min:10, max: 100},
 						yaxis: { min:10, max: 90}

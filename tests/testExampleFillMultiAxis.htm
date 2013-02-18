@@ -1,0 +1,36 @@
+<hmtl>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>CurvedLines Plugin for flot</title>
+		<script type="text/javascript" src="../jquery-1.8.3.min.js"></script>
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../flot/excanvas.min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../flot/jquery.flot.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../curvedLines.js"></script>
+	</head>
+	<body>
+		<div id="fillAndMultiAxis" style="width: 800;height: 400;"></div>
+
+		<script id="source" language="javascript" type="text/javascript">				
+			$(function () {
+
+			var d1 = [[20,20], [42,60], [54, 20], [80,80]];
+			var d2 = [[20,700], [80,300]];
+
+			var options = { series: {
+			curvedLines: {
+			active: true
+			}
+			},
+			yaxes: [{ min:10, max: 90}, { position: 'right'}]
+			};
+
+			$.plot($("#fillAndMultiAxis"),
+			[
+			{data: d1, lines: { show: true, fill: true, fillColor: "rgba(195, 195, 195, 0.4)", lineWidth: 3}, curvedLines: {apply: true}}, {data: d1,  points: { show: true }},
+			{data: d2, lines: { show: true, lineWidth: 3}, curvedLines: {apply: true}, yaxis:2}, {data: d2,  points: { show: true }, yaxis:2}
+			], options);
+			});
+		</script>
+	</body>
+
+</hmtl>

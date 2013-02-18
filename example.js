@@ -1,6 +1,6 @@
 $(function () {
     		
-    	//<div id="flotOrig" style="width: 800;height: 400;"></div>
+    	//<div id="flotOrig" style="width: 800px;height: 400px;"></div>
 	
     		
     	var d1 = [[20,20], [42,60], [54, 20], [80,80]];

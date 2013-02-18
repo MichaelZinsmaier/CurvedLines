@@ -1,6 +1,6 @@
 $(function () {
   
-  //<div id="flotFit" style="width: 800;height: 400;"></div>
+  //<div id="flotFit" style="width: 800px;height: 400px;"></div>
   
    var d1 = [[20,20], [42,60], [54, 30], [80,80]];
   

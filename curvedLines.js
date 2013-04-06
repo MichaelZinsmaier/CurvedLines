@@ -57,14 +57,15 @@
 	 options:
 	 _____________________________________________________
 
-	 active:           bool true => plugin can be used
-	 apply:            bool true => series will be drawn as curved line
-	 fit:              bool true => forces the max,mins of the curve to be on the datapoints
-	 curvePointFactor  int  defines how many "virtual" points are used per "real" data point to
-	 						emulate the curvedLines
-	 fitPointDist:     int  defines the x axis distance of the additional two points that are used
-	 						to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
-	 						"virtual" points if fit is true)
+	 active:           bool    true => plugin can be used
+	 apply:            bool    true => series will be drawn as curved line
+	 fit:              bool    true => forces the max,mins of the curve to be on the datapoints
+	 curvePointFactor  number  defines how many "virtual" points are used per "real" data point to
+	 						   emulate the curvedLines
+	 fitPointDist:     number  guessed by default can be set manually.
+	                           defines the x axis distance of the additional two points that are used
+	 						   to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
+	 						   "virtual" points if fit is true)
 	 						
 	 + line options (since v0.5 curved lines use flots line implementation for drawing
 	   => line options like fill, show ... are supported out of the box)
@@ -91,7 +92,7 @@
 					apply: false,
 					fit : false,
 					curvePointFactor : 20,
-					fitPointDist : 0.0001
+					fitPointDist : undefined
 				}
 			}
 		};
@@ -196,7 +197,17 @@
 					//insert a point before and after the "real" data point to force the line
 					//to have a max,min at the data point however only if it is a lowest or highest point of the
 					//curve => avoid saddles
-					var fpDist = curvedLinesOptions.fitPointDist;
+					
+					var fpDist;
+					if(typeof curvedLinesOptions.fitPointDist == 'undefined') {
+						//estimate it
+						var minX = points[0];
+						var maxX = points[points.length-ps];			
+						fpDist = (maxX - minX) / (500 * 100); //x range / (estimated pixel length of placeholder * factor)
+					} else {
+						//use user defined value
+						fpDist = curvedLinesOptions.fitPointDist;
+					}
 
 					for (var i = 0; i < points.length; i += ps) {
 
@@ -205,13 +216,22 @@
 						curX = i;
 						curY = i + yPos;
 
-						//add point to front
+						//add point X s
 						front[X] = points[curX] - fpDist;
+						back[X] = points[curX] + fpDist;
+						
+						var factor = 2;
+						while (front[X] == points[curX] || back[X] == points[curX]) {
+							//inside the ulp
+							front[X] = points[curX] - (fpDist * factor);
+							back[X] = points[curX] + (fpDist * factor);
+							factor++;
+						}
+						
+						//add point Y s
+						back[Y] = points[curY];
 						front[Y] = points[curY];
 						
-						//add point to back
-						back[X] = points[curX] + fpDist;
-						back[Y] = points[curY];
 						
 						
 						//get points (front and back) Y value for saddle test

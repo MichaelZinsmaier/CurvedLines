@@ -57,15 +57,14 @@
 	 options:
 	 _____________________________________________________
 
-	 active:           bool    true => plugin can be used
-	 apply:            bool    true => series will be drawn as curved line
-	 fit:              bool    true => forces the max,mins of the curve to be on the datapoints
-	 curvePointFactor  number  defines how many "virtual" points are used per "real" data point to
-	 						   emulate the curvedLines
-	 fitPointDist:     number  guessed by default can be set manually.
-	                           defines the x axis distance of the additional two points that are used
-	 						   to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
-	 						   "virtual" points if fit is true)
+	 active:           bool true => plugin can be used
+	 apply:            bool true => series will be drawn as curved line
+	 fit:              bool true => forces the max,mins of the curve to be on the datapoints
+	 curvePointFactor  int  defines how many "virtual" points are used per "real" data point to
+	 						emulate the curvedLines
+	 fitPointDist:     int  defines the x axis distance of the additional two points that are used
+	 						to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
+	 						"virtual" points if fit is true)
 	 						
 	 + line options (since v0.5 curved lines use flots line implementation for drawing
 	   => line options like fill, show ... are supported out of the box)
@@ -151,7 +150,7 @@
 							newSerie.lines = $.extend({}, series.lines);
 							newSerie.lines.fill = undefined;
 							newSerie.label = undefined;
-							newSerie.datapoints = {};
+							newSerie.datapoints = $.extend({}, series.datapoints);
 							//Redefine datapoints to top only (else it can have null values which will open the cruve !)
 							newSerie.datapoints.points = pointsTop;
 							newSerie.datapoints.pointsize = 2;

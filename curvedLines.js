@@ -114,7 +114,7 @@
 					if (series.lines.fill) {
 
 						var pointsTop = calculateCurvePoints(datapoints, series.curvedLines, 1)
-						,pointsBottom = calculateCurvePoints(datapoints, series.curvedLines, 2); //flot makes sur for us that we've got a second y point if fill is true !
+						,pointsBottom = calculateCurvePoints(datapoints, series.curvedLines, 2); //flot makes sure for us that we've got a second y point if fill is true !
 
 						//Merge top and bottom curve
 						datapoints.pointsize = 3;

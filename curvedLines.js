@@ -290,7 +290,7 @@
 				for (var i = 1; i < n - 1; ++i) {
 					var d = (xdata[i + 1] - xdata[i - 1]);
 					if (d == 0) {
-						return null;
+						return [];
 					}
 
 					var s = (xdata[i] - xdata[i - 1]) / d;
@@ -334,7 +334,7 @@
 					var h = (xdata[max] - xdata[min]);
 
 					if (h == 0) {
-						return null;
+						return [];
 					}
 
 					var a = (xdata[max] - xnew[j]) / h;

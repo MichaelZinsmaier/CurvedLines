@@ -35,6 +35,8 @@
 	 points. Both modes are achieved through adding of more data points
 	 => 1) with large data sets you may get trouble
 	 => 2) if you want to display the points too, you have to plot them as 2nd data series over the lines
+	 
+	 && 3) consecutive x data points are not allowed to have the same value
 
 	 This is version 0.5 of curvedLines so it will probably not work in every case. However
 	 the basic form of use descirbed next works (:
@@ -290,7 +292,8 @@
 				for (var i = 1; i < n - 1; ++i) {
 					var d = (xdata[i + 1] - xdata[i - 1]);
 					if (d == 0) {
-						return null;
+						//point before current point and after current point need some space in between
+						return [];
 					}
 
 					var s = (xdata[i] - xdata[i - 1]) / d;
@@ -317,6 +320,7 @@
 				result.push(ynew[0]);
 
 				for ( j = 1; j < num; ++j) {
+					//new x point (sampling point for the created curve)
 					xnew[j] = xnew[0] + j * step;
 
 					var max = n - 1;
@@ -331,10 +335,12 @@
 						}
 					}
 
+					//found point one to the left and one to the right of generated new point
 					var h = (xdata[max] - xdata[min]);
 
 					if (h == 0) {
-						return null;
+						//similar to above two points from original x data need some space between them
+						return [];
 					}
 
 					var a = (xdata[max] - xnew[j]) / h;

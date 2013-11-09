@@ -104,7 +104,6 @@
 
 			//if the plugin is active register processDatapoints method
 			function processOptions(plot, options) {
-
 				if (options.series.curvedLines.active) {
 					plot.hooks.processDatapoints.unshift(processDatapoints);
 				}
@@ -112,7 +111,10 @@
 
 			//only if the plugin is active
 			function processDatapoints(plot, series, datapoints) {
-				if (series.curvedLines.apply == true && series.originSeries === undefined) {
+				var nrPoints = datapoints.points.length / datapoints.pointsize;
+				var EPSILON = 0.5; //pretty large epsilon but save
+
+				if (series.curvedLines.apply == true && series.originSeries === undefined && nrPoints > (1 + EPSILON)) {
 					if (series.lines.fill) {
 
 						var pointsTop = calculateCurvePoints(datapoints, series.curvedLines, 1)

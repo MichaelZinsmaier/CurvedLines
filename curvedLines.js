@@ -188,9 +188,6 @@
 
 				var xdata = new Array;
 				var ydata = new Array;
-
-				var X = 0;
-				var Y = yPos;
 				
 				var curX = -1;
 				var curY = -1;
@@ -214,62 +211,35 @@
 
 					for (var i = 0; i < points.length; i += ps) {
 
-						var front = new Array;
-						var back = new Array;
+						var frontX;
+						var backX;
 						curX = i;
 						curY = i + yPos;
 
 						//add point X s
-						front[X] = points[curX] - fpDist;
-						back[X] = points[curX] + fpDist;
+						frontX = points[curX] - fpDist;
+						backX = points[curX] + fpDist;
 						
 						var factor = 2;
-						while (front[X] == points[curX] || back[X] == points[curX]) {
+						while (frontX == points[curX] || backX == points[curX]) {
 							//inside the ulp
-							front[X] = points[curX] - (fpDist * factor);
-							back[X] = points[curX] + (fpDist * factor);
+							frontX = points[curX] - (fpDist * factor);
+							backX = points[curX] + (fpDist * factor);
 							factor++;
-						}
+						}												
 						
-						//add point Y s
-						back[Y] = points[curY];
-						front[Y] = points[curY];
-						
-						
-						
-						//get points (front and back) Y value for saddle test
-						var frontPointY = points[curY];
-						var backPointY = points[curY];
-						if (i >= ps) {
-							frontPointY = points[curY - ps];
-						}
-						if ((i + ps) < points.length) {
-							backPointY = points[curY + ps];
-						}
+						//add curve points
+						xdata[j] = frontX;
+						ydata[j] = points[curY];
+						j++;
 
-						//test for a saddle
-						if ((frontPointY <= points[curY] && backPointY <= points[curY]) || //max or partial horizontal
-						(frontPointY >= points[curY] && backPointY >= points[curY])) {//min or partial horizontal
+						xdata[j] = points[curX];
+						ydata[j] = points[curY];
+						j++;
 
-							//add curve points
-							xdata[j] = front[X];
-							ydata[j] = front[Y];
-							j++;
-
-							xdata[j] = points[curX];
-							ydata[j] = points[curY];
-							j++;
-
-							xdata[j] = back[X];
-							ydata[j] = back[Y];
-							j++;
-						} else {//saddle
-							//use original point only
-							xdata[j] = points[curX];
-							ydata[j] = points[curY];
-							j++;
-						}
-
+						xdata[j] = backX;
+						ydata[j] = points[curY];
+						j++;
 					}
 				} else {
 					//just use the datapoints

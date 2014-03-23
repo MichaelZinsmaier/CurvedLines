@@ -1,0 +1,64 @@
+<hmtl>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>CurvedLines Plugin for flot</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../flot/excanvas.min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../flot/jquery.flot.js"></script>
+		<script language="javascript" type="text/javascript" src="../flot/jquery.flot.time.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../curvedLines.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.navigate.js"></script>
+	</head>
+	<body>
+		<div id="placeholder" style="width: 800;height: 400;"></div>
+		<div id="placeholder2" style="width: 800;height: 400;"></div>
+
+		<script id="source" language="javascript" type="text/javascript">
+			var options = {
+						series: {
+							curvedLines: {
+								active: true,
+								fit: true,
+								curvePointFactor: 200
+							}
+						},
+						xaxis: {
+							mode: "time",
+							tickSize: [1, "day"],
+							timezone: "browser",
+							timeformat: "%m/%d %a",
+							min: 1393828200000,
+							max: 1394505000000,
+							tickLength: 0,
+							panRange: [1378809000000, 1394505000000],
+							dayNames: ["S", "M", "T", "W", "T", "F", "S"]
+						},
+						yaxis: {
+							panRange: [0, 2000],
+							ticks: ['0', '70', '130', '180', '200', '300', '400', '500'],
+							tickLength: 0,
+							tickDecimals: 0
+						},
+						grid: {
+							borderWidth: {
+								top: 0,
+								right: 0,
+								bottom: 1,
+								left: 1
+							},
+							clickable: true,
+							hoverable: true
+						},
+						pan: {
+							interactive: true
+						}
+			};
+			
+			var d1 = [[1385490600000, 150],[1386009000000, 450],[1392834600000, 444],[1393266600000, 100],[1393353000000, 147],[1393439400000, 105],
+									[1393525800000, 179.5],[1393612200000, 85],[1393871400000, 107.5]];
+			
+			$.plot($("#placeholder"), [{data: d1, lines: { show: true }, curvedLines: {apply: true}}, {data: d1, points: {show: true}}], options);
+		</script>
+	</body>
+
+</hmtl>

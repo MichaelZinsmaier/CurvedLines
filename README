@@ -7,11 +7,12 @@ Feel free to add additional features and correct errors.
 Regards Michael
 
 
-Update:
-added tests/Issue18.htm with a better explanation of the curvePointFactor and fitPointDist parameter!
+### Update:
+added tests/Issue18.htm with a better explanation of the curvePointFactor
+and fitPointDist parameter!
 
 
-    how to use it:
+###    how to use it:
     ____________________________________________________
 
     var d1 = [[5,5],[7,3],[9,12]];
@@ -19,18 +20,20 @@ added tests/Issue18.htm with a better explanation of the curvePointFactor and fi
     var options = { series: { curvedLines: {  active: true }}};
 
     //you might want to adjust curvePointFactor 
-    $.plot($("#placeholder"), [{data = d1, lines: { show: true}, curvedLines: {apply: true}}], options);
+    $.plot($("#placeholder"), [{data = d1, lines: { show: true}, 
+                                curvedLines: {apply: true}}], options);
 
      _____________________________________________________
 
-     options:
+###     options:
      _____________________________________________________
 
      active:           bool true => plugin can be used
      apply:            bool true => series will be drawn as curved line
-     fit:              bool true => forces the max,mins of the curve to be on the datapoints
-     curvePointFactor  int  defines how many "virtual" points are used per "real" data point to
-				emulate the curvedLines (points total = real points * curvePointFactor)
-     fitPointDist:     int  defines the x axis distance of the additional two points that are used
-   				to enforce the min max condition.
-     _____________________________________________________
+     fit:              bool true => forces the max,mins of the curve to
+                                    be on the datapoints
+     curvePointFactor  int  defines how many "virtual" points are used per "real" data
+                                point to emulate the curvedLines (points total = real
+                                points * curvePointFactor)
+     fitPointDist:     int  defines the x axis distance of the additional two points
+                                that are used to enforce the min max condition.

@@ -1,0 +1,160 @@
+<hmtl>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>CurvedLines Plugin for flot</title>
+		 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../flot/excanvas.min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../flot/jquery.flot.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.time.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.navigate.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../curvedLines.js"></script>
+	</head>
+	<body>
+		<div id="placeholder" style="width: 800;height: 400;"></div>
+
+		<script id="source" language="javascript" type="text/javascript">
+			$(function () {
+
+				var options = {
+					series: {
+						curvedLines: {
+							active: true
+						}
+					},
+					xaxis: {
+				    	mode: "time",
+						tickSize: [1, "day"],
+						timezone: "browser",
+						timeformat: "%m/%d%a",
+						min: 1393396200000,
+						max: 1394073000000,
+						tickLength: 0,
+						panRange: [1378809000000, 1394505000000],
+						dayNames: ["S", "M", "T", "W", "T", "F", "S"]
+					},	
+					yaxis: {
+						panRange: [0, 500],
+						ticks: ['0', '70', '130', '180', '200', '300', '400', '500'],
+						tickLength: 0,
+						tickDecimals: 0
+					},
+					pan: {
+						interactive: true
+					}
+				}
+
+				var dataSet = [
+					[1385490600000, 150],
+					[1386009000000, 450],
+					[1392834600000, 444],
+					[1393266600000, 100],
+					[1393353000000, 147],
+					[1393439400000, 105],
+					[1393525800000, 179.5],
+					[1393612200000, 85],
+					[1393871400000, 107.5]
+				];
+				
+				
+				//SUMMARY
+				//
+				//Depending on your data you might have to adjust the parameters curvePointFactor and (unlikely) fitPointDist.
+				//Use this example to learn:
+				//
+				//  - how to track down such problems (activate/deactivate dataShowVirtualPoints line 147 to see the created virtual points)
+				//  - more details about the curvePointFactor (important!)
+				//  - more details about fitPointDist
+				
+				
+				//CURVE POINT FACTOR
+				
+				//			defines how many "virtual" points are used per "real" data point to
+	 			//			emulate the curvedLines (points total = real points * curvePointFactor)
+				//
+				//For the current example we start with 9 data points that are extended by the default factor of 20 which leads to
+				//180 data points including 9 original data points and if fit is true further 16 inner min max helpers (2 * 9) - 2).
+				//These virtual data points are equally distributed on the x-Axis!
+				//
+				//This is a sensitive parameter. If curvePointFactor is choosen too large performance will degenerate because of the
+				//potentially thousands of additional points. But if it is choosen to low the curviness will not be achieved.
+				//
+				//In the current example 20 is to low. The problem is that the input data contains a huge gap on the xaxis and
+				//nearly all of the virtual data points end up on the straight line that bridges the gap. To less virtual points are
+				//placed between the original data points at the start and end of the plot and the bending does not work.
+				//
+				//Increase the curvePointFactor to e.g. 200 to solve the problem. To find an appropriate value for your data consider the
+				//maximum amount of data points that you will face as well as their distirbution.
+				
+				
+							
+				
+				//FIT POINT DIST:
+				
+				//		defines the x axis distance of the additional two points that are used
+	 			//		to enforce the min max condition.
+	 			//
+	 			//Two points are placed near the original data point to get the min/max point of the curve at a real data point.
+	 			//These two virtual points should be close (less than one pixel) to the real data point.
+	 			//
+	 			//CurvedLines estimates the distance with the following formula: fpDist = (maxX - minX) / (500 * 100);
+	 			//The xrange of the plot is devided by a (wild guessed) plot width of 500 pixels and then subdevided by 100 to get
+	 			//below one pixel. I.e. for plots without panning and a div width of 500 we would get a fpDist of 1/100 pixels.
+	 			//
+	 			//Of course in reality these guesses might be far off. However the parameter is quite robust and the guessed value will
+	 			//often be good enough.
+	 			//
+	 			//In this plot the calculated value is 167.616 and values between 5.000.000 and 1 would still work.
+	 			//If you want to screw things up try something like 10.000.000 ...
+	 			//
+	 			//=> The fitPointDist should normally work for you however if you use a vast panning range or very large/very small numbers
+	 			// you might want to define it on your own.  
+	 			//
+	 			// E.g. lets aim for 1/10 of a pixel for our current example plot:
+				//	1 day ~ 100 pixels = 86.400.000
+				//	1 pixel ~ 864000
+				//	1/10 pixel ~ 86400
+ 
+				var dataLinesArray = {
+					data: dataSet,
+					lines: {
+						show: true
+					},
+					curvedLines: {
+						apply: true,
+/*play with parameters (lines)*/
+						//fitPointDist: 86400,
+						//curvePointFactor: 200,
+						fit: true
+					},
+					clickable: false,
+					hoverable: false,
+					color: '#7D177A'
+				};
+
+				var dataShowVirtualPoints = {
+					data: dataSet,
+					points: {
+						show: true
+					},
+					curvedLines: {
+						apply: true,
+/*play with parameters (points)*/
+						//fitPointDist: 86400,
+						//curvePointFactor: 200,
+						fit: true
+					},
+					color:'#FF0000'
+				};
+
+				var Data = [];
+				Data.push(dataLinesArray);
+/*see virtual points*/
+				//Data.push(dataShowVirtualPoints);
+
+				$.plot("#placeholder", Data, options);
+
+			});
+		</script>
+	</body>
+
+</hmtl>

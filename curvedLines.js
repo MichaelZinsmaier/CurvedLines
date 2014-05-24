@@ -63,10 +63,9 @@
 	 apply:            bool true => series will be drawn as curved line
 	 fit:              bool true => forces the max,mins of the curve to be on the datapoints
 	 curvePointFactor  int  defines how many "virtual" points are used per "real" data point to
-	 						emulate the curvedLines
+	 						emulate the curvedLines (points total = real points * curvePointFactor)
 	 fitPointDist:     int  defines the x axis distance of the additional two points that are used
-	 						to enforce the min max condition. (you will get curvePointFactor * 3 * |datapoints|
-	 						"virtual" points if fit is true)
+	 						to enforce the min max condition. 
 	 						
 	 + line options (since v0.5 curved lines use flots line implementation for drawing
 	   => line options like fill, show ... are supported out of the box)
@@ -195,8 +194,7 @@
 
 				if (curvedLinesOptions.fit) {
 					//insert a point before and after the "real" data point to force the line
-					//to have a max,min at the data point however only if it is a lowest or highest point of the
-					//curve => avoid saddles
+					//to have a max,min at the data point.
 					
 					var fpDist;
 					if(typeof curvedLinesOptions.fitPointDist == 'undefined') {
@@ -279,6 +277,7 @@
 					y2[j] = y2[j] * y2[j + 1] + delta[j];
 				}
 
+				//   xmax  - xmin  / #points
 				var step = (xdata[n - 1] - xdata[0]) / (num - 1);
 
 				var xnew = new Array;

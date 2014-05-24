@@ -7,12 +7,14 @@ Feel free to add additional features and correct errors.
 Regards Michael
 
 
-### Update:
+**Update:
 added tests/Issue18.htm with a better explanation of the curvePointFactor
-and fitPointDist parameter!
+and fitPointDist parameter!**
 
-
-###    how to use it:
+   
+   
+   
+    how to use it:
     ____________________________________________________
 
     var d1 = [[5,5],[7,3],[9,12]];
@@ -25,7 +27,7 @@ and fitPointDist parameter!
 
      _____________________________________________________
 
-###     options:
+     options:
      _____________________________________________________
 
      active:           bool true => plugin can be used

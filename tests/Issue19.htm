@@ -1,0 +1,60 @@
+<hmtl>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>CurvedLines Plugin for flot</title>
+		 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../flot/excanvas.min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../flot/jquery.flot.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.time.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.stack.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.navigate.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../curvedLines.js"></script>
+	</head>
+	<body>
+		<div class="demo-container">
+			<div id="placeholder" style="height: 200px; width: 400px;" class="demo-placeholder"></div>
+			<div id="placeholder2" style="height: 200px; width: 400px;" class="demo-placeholder"></div>
+		</div>
+		<script id="source" language="javascript" type="text/javascript">
+		
+		
+$(function() {
+    
+    var d1 = [];
+    for (var i = 0; i <= 10; i += 1) {
+        d1.push([i, parseInt(Math.random() * 30)]);}
+    
+    var d2 = [];
+    for (var i = 0; i <= 10; i += 1) {
+        d2.push([i, parseInt(Math.random() * 30)]);}
+    
+    var d3 = [];
+    for (var i = 0; i <= 10; i += 1) {
+        d3.push([i, parseInt(Math.random() * 30)]);}
+    
+    $.plot("#placeholder", [ d1, d2, d3 ], {
+        series: { stack: true,
+                 lines: {show: true, fill: true, },
+                }
+    });
+
+    
+    $.plot("#placeholder2", 
+           [
+               {data: d1, lines: { show: true, fill: true }, stack: true, curvedLines: {apply: true}},
+               {data: d2, lines: { show: true, fill: true }, stack: true, curvedLines: {apply: true}},
+               {data: d3, lines: { show: true, fill: true }, stack: true, curvedLines: {apply: true}},
+           ],
+               {
+               series: {
+                       curvedLines: { active: true}
+               }
+           }
+	);
+    
+});
+
+		</script>
+	</body>
+
+</hmtl>

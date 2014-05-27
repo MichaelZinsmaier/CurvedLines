@@ -104,7 +104,7 @@
 			//if the plugin is active register processDatapoints method
 			function processOptions(plot, options) {
 				if (options.series.curvedLines.active) {
-					plot.hooks.processDatapoints.unshift(processDatapoints);
+					plot.hooks.processDatapoints.push(processDatapoints);
 				}
 			}
 
@@ -153,6 +153,7 @@
 							newSerie.lines = $.extend({}, series.lines);
 							newSerie.lines.fill = undefined;
 							newSerie.label = undefined;
+							newSerie.stack = undefined;
 							newSerie.datapoints = $.extend({}, series.datapoints);
 							//Redefine datapoints to top only (else it can have null values which will open the cruve !)
 							newSerie.datapoints.points = pointsTop;

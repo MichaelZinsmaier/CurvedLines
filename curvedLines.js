@@ -81,6 +81,7 @@
 	 *  v0.5   rewritten instead of implementing a own draw function CurvedLines is now based on the processDatapoints flot hook (credits go to thomas ritou).
 	 * 		   This change breakes existing code however CurvedLines are now just many tiny straight lines to flot and therefore all flot lines options (like gradient fill,
 	 * 	       shadow) are now supported out of the box
+	 *  v0.6   flot 0.8 compatibility and some bug fixes
 	 */
 
 	(function($) {
@@ -104,7 +105,7 @@
 			//if the plugin is active register processDatapoints method
 			function processOptions(plot, options) {
 				if (options.series.curvedLines.active) {
-					plot.hooks.processDatapoints.push(processDatapoints);
+					plot.hooks.processDatapoints.unshift(processDatapoints);
 				}
 			}
 
@@ -147,31 +148,6 @@
 							}
 							k += 3;
 						}
-
-						if (series.lines.lineWidth > 0) {//Let's draw line in separate series
-							var newSerie = $.extend({}, series);
-							newSerie.lines = $.extend({}, series.lines);
-							newSerie.lines.fill = undefined;
-							newSerie.label = undefined;
-							newSerie.stack = undefined;
-							newSerie.datapoints = $.extend({}, series.datapoints);
-							//Redefine datapoints to top only (else it can have null values which will open the cruve !)
-							newSerie.datapoints.points = pointsTop;
-							newSerie.datapoints.pointsize = 2;
-							newSerie.curvedLines.apply = false;
-							//Don't redo curve point calculation as datapoint is copied to this new serie
-							//We find our series to add the line just after the fill (so other series you wanted above this one will still be)
-							var allSeries = plot.getData();
-							for ( i = 0; i < allSeries.length; i++) {
-								if (allSeries[i] == series) {
-									plot.getData().splice(i + 1, 0, newSerie);
-									break;
-								}
-							}
-
-							series.lines.lineWidth = 0;
-						}
-
 					} else if (series.lines.lineWidth > 0) {
 						datapoints.points = calculateCurvePoints(datapoints, series.curvedLines, 1);
 						datapoints.pointsize = 2;

@@ -309,7 +309,7 @@
 			init : init,
 			options : options,
 			name : 'curvedLines',
-			version : '0.5'
+			version : '0.6'
 		});
 
 	})(jQuery);

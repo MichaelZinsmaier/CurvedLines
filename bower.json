@@ -6,7 +6,7 @@
     "Michael Zinsmaier"
   ],
   "license": "MIT",
-  "ignore": [".gitignore","flot","tests",".project","example.js","exampleFillMultiAxis.js","exampleFit.js","exampleFlotWithDates.js","exampleThreshold.js"],
+  "ignore": ["./!(curvedLines.js)"],
   "dependencies": {
      "flot": ">=0.8.0"
   }

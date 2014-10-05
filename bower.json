@@ -8,6 +8,6 @@
   "authors": [
     "Michael Zinsmaier"
   ],
-  "license": "MIT"
+  "license": "MIT",
   "ignore": [".gitignore","flot","tests",".project"]
 }

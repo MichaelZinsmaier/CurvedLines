@@ -4,7 +4,7 @@
   "main": "curvedLines.js",
   "dependencies": [
      "flot": "0.8.0"
-  ]
+  ],
   "authors": [
     "Michael Zinsmaier"
   ],

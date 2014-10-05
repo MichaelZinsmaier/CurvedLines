@@ -82,6 +82,7 @@
 	 * 		   This change breakes existing code however CurvedLines are now just many tiny straight lines to flot and therefore all flot lines options (like gradient fill,
 	 * 	       shadow) are now supported out of the box
 	 *  v0.6   flot 0.8 compatibility and some bug fixes
+	 *  v0.6.0 changed versioning schema
 	 */
 
 	(function($) {
@@ -309,7 +310,7 @@
 			init : init,
 			options : options,
 			name : 'curvedLines',
-			version : '0.6'
+			version : '0.6.0'
 		});
 
 	})(jQuery);

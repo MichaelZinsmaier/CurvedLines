@@ -5,7 +5,11 @@
     "Michael Zinsmaier"
   ],
   "license": "MIT",
-  "ignore": ["./!(curvedLines.js)"],
+  "ignore": {
+    "**/*",
+    "!flot.curvedlines.js",
+    "!bower.json"
+  },
   "dependencies": {
      "flot": ">=0.8.0"
   }

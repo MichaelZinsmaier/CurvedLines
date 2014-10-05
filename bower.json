@@ -5,11 +5,11 @@
     "Michael Zinsmaier"
   ],
   "license": "MIT",
-  "ignore": {
+  "ignore": [
     "**/*",
     "!curvedlines.js",
     "!bower.json"
-  },
+  ],
   "dependencies": {
      "flot": ">=0.8.0"
   }

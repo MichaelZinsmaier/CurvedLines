@@ -1,4 +1,10 @@
 {
   "name": "flot.curvedlines",
-  "version": "0.6.0"
+  "version": "0.6.0",
+  "main": "curvedLines.js",
+  "authors": [
+    "Michael Zinsmaier"
+  ],
+  "license": "MIT",
+  "ignore": [".gitignore","flot","tests",".project","example.js","exampleFillMultiAxis.js","exampleFit.js","exampleFlotWithDates.js","exampleThreshold.js"]
 }

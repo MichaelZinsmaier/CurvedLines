@@ -66,6 +66,7 @@
 	 						emulate the curvedLines (points total = real points * curvePointFactor)
 	 fitPointDist:     int  defines the x axis distance of the additional two points that are used
 	 						to enforce the min max condition. 
+	 forceMin:         number|undefined  forces the mins to never go below value
 	 						
 	 + line options (since v0.5 curved lines use flots line implementation for drawing
 	   => line options like fill, show ... are supported out of the box)
@@ -83,6 +84,7 @@
 	 * 	       shadow) are now supported out of the box
 	 *  v0.6   flot 0.8 compatibility and some bug fixes
 	 *  v0.6.0 changed versioning schema
+	 *  v0.6.5 forceMin addded
 	 */
 
 	(function($) {
@@ -94,7 +96,8 @@
 					apply: false,
 					fit : false,
 					curvePointFactor : 20,
-					fitPointDist : undefined
+					fitPointDist : undefined,
+					forceMin : undefined
 				}
 			}
 		};
@@ -298,7 +301,11 @@
 					ynew[j] = a * ydata[min] + b * ydata[max] + ((a * a * a - a) * y2[min] + (b * b * b - b) * y2[max]) * (h * h) / 6;
 					
 					result.push(xnew[j]);
-					result.push(ynew[j]);
+					if (curvedLinesOptions.forceMin == undefined) {
+						result.push(ynew[j]);
+					} else {
+						result.push(ynew[j] < curvedLinesOptions.forceMin ? curvedLinesOptions.forceMin : ynew[j]);
+					}
 				}
 
 				return result;
@@ -310,7 +317,7 @@
 			init : init,
 			options : options,
 			name : 'curvedLines',
-			version : '0.6.4'
+			version : '0.6.5'
 		});
 
 	})(jQuery);

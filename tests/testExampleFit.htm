@@ -36,9 +36,13 @@
 						show : true,
 						lineWidth : 3
 					},
-					curvedLines: {apply: true,
-						fit : true,
+					curvedLines: 
+					{
+						apply: true,
+						legacyOverride: {
+							fit : true,
 						}
+					}
 				}, {
 					data : d1,
 					points : {

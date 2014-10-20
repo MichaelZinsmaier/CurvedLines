@@ -26,8 +26,8 @@
 
 			$.plot($("#fillAndMultiAxis"),
 			[
-			{data: d1, lines: { show: true, fill: true, fillColor: "rgba(195, 195, 195, 0.4)", lineWidth: 3}, curvedLines: {apply: true}}, {data: d1,  points: { show: true }},
-			{data: d2, lines: { show: true, lineWidth: 3}, curvedLines: {apply: true}, yaxis:2}, {data: d2,  points: { show: true }, yaxis:2}
+			{data: d1, lines: { show: true, fill: true, fillColor: "rgba(195, 195, 195, 0.4)", lineWidth: 3}, curvedLines: {apply: true, legacyOverride: true}}, {data: d1,  points: { show: true }},
+			{data: d2, lines: { show: true, lineWidth: 3}, curvedLines: {apply: true, legacyOverride: true}, yaxis:2}, {data: d2,  points: { show: true }, yaxis:2}
 			], options);
 			});
 		</script>

@@ -47,7 +47,11 @@ $(function() {
            ],
                {
                series: {
-                       curvedLines: { active: true, fit: true}
+                       curvedLines: {
+                       				  active: true, 
+                       				  apply: true,
+                       				  legacyOverride : { fit: true }
+                       				}
                }
            }
 	);

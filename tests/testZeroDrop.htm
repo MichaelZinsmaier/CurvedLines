@@ -26,7 +26,7 @@
 			yaxis: { min:0, max: 10}
 			};
 
-			$.plot($("#flotOrig"), [{data: d1, lines: { show: true, lineWidth: 3}, curvedLines: {apply: true}}, {data: d1,  points: { show: true }}], options);
+			$.plot($("#flotOrig"), [{data: d1, lines: { show: true, lineWidth: 3}, curvedLines: {apply: true, legacyOverride: true}}, {data: d1,  points: { show: true }}], options);
 			});
 		</script>
 	</body>

@@ -190,7 +190,7 @@
 				
 				var xStart = points[curX];
 				var xEnd = points[curX + ps];
-				var xStep = (xEnd - xStart) / curvedLinesOptions.nrSplinePoints;
+				var xStep = (xEnd - xStart) / Number(curvedLinesOptions.nrSplinePoints);
 
 				//add point
 				result.push(points[curX]);
@@ -256,7 +256,7 @@
 				for (var i = ps; i < points.length - ps; i += ps) {
 					var curX = i;
 					var curY = i + yPos;	
-					c1s.push(curvedLinesOptions.tension * (points[curX + ps] - points[curY - ps]) / (points[curX + ps] - points[curX - ps]));
+					c1s.push(Number(curvedLinesOptions.tension) * (points[curY + ps] - points[curY - ps]) / (points[curX + ps] - points[curX - ps]));
 				}
 			}
 			c1s.push(ms[ms.length - 1]);

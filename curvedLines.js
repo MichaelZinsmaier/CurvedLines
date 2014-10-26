@@ -32,7 +32,7 @@
  curvedLines is a plugin for flot, that tries to display lines in a smoother way.
  This is achieved through adding of more data points. The plugin is a data processor and can thus be used
  in combination with standard line / point rendering options.
- 
+
  => 1) with large data sets you may get trouble
  => 2) if you want to display the points too, you have to plot them as 2nd data series over the lines
  && 3) consecutive x data points are not allowed to have the same value
@@ -57,18 +57,17 @@
 
  active:           bool true => plugin can be used
  apply:            bool true => series will be drawn as curved line
- 
- 
+
  deprecated options from flot prior to 1.0.0:
  ------------------------------------------------
  legacyOverride	   bool true => use old default   OR
- legacyOverride    optionArray  
- 			       { 			       
- 			       		fit:              bool true => forces the max,mins of the curve to be on the datapoints
- 			       		curvePointFactor  int  		   defines how many "virtual" points are used per "real" data point to
- 					    	            	   		   emulate the curvedLines (points total = real points * curvePointFactor)
- 	               		fitPointDist:     int  		   defines the x axis distance of the additional two points that are used
- 	               }						   		   to enforce the min max condition.
+ legacyOverride    optionArray
+ {
+ fit:              bool true => forces the max,mins of the curve to be on the datapoints
+ curvePointFactor  int  		   defines how many "virtual" points are used per "real" data point to
+ emulate the curvedLines (points total = real points * curvePointFactor)
+ fitPointDist:     int  		   defines the x axis distance of the additional two points that are used
+ }						   		   to enforce the min max condition.
  */
 
 /*
@@ -82,19 +81,20 @@
  * 	       shadow) are now supported out of the box
  *  v0.6   flot 0.8 compatibility and some bug fixes
  *  v0.6.x changed versioning schema
- * 
+ *
  *  v1.0.0 API Break marked existing implementation/options as deprecated
  */
 
 (function($) {
 
-	var options = {		
+	var options = {
 		series : {
 			curvedLines : {
 				active : false,
 				apply : false,
 				monotonicFit : false,
 				tension : 0.0,
+				nrSplinePoints : 20,
 				legacyOverride : undefined
 			}
 		}
@@ -158,26 +158,144 @@
 			}
 		}
 
-
 		function calculateCurvePoints(datapoints, curvedLinesOptions, yPos) {
-			if (typeof curvedLinesOptions.legacyOverride != 'undefined' && curvedLinesOptions.legacyOverride != false) {
+			if ( typeof curvedLinesOptions.legacyOverride != 'undefined' && curvedLinesOptions.legacyOverride != false) {
 				var defaultOptions = {
-						fit : false,
-						curvePointFactor : 20,
-						fitPointDist : undefined
+					fit : false,
+					curvePointFactor : 20,
+					fitPointDist : undefined
 				};
 				var legacyOptions = jQuery.extend(defaultOptions, curvedLinesOptions.legacyOverride);
 				return calculateLegacyCurvePoints(datapoints, legacyOptions, yPos);
 			}
 
-			return datapoints.points;
+			return calculateSplineCurvePoints(datapoints, curvedLinesOptions, yPos);
 		}
+
+		function calculateSplineCurvePoints(datapoints, curvedLinesOptions, yPos) {
+			var points = datapoints.points;
+			var ps = datapoints.pointsize;
+			
+			//create interpolant fuction
+			var splines = createHermiteSplines(datapoints, curvedLinesOptions, yPos);
+			var result = [];
+
+			//sample the function
+			// (the result is intependent from the input data =>
+			//	it is ok to alter the input after this method)
+			var j = 0;
+			for (var i = 0; i < points.length - ps; i += ps) {
+				var curX = i;
+				var curY = i + yPos;	
+				
+				var xStart = points[curX];
+				var xEnd = points[curX + ps];
+				var xStep = (xEnd - xStart) / curvedLinesOptions.nrSplinePoints;
+
+				//add point
+				result.push(points[curX]);
+				result.push(points[curY]);
+
+				//add curve point
+				for (var x = (xStart += xStep); x < xEnd; x += xStep) {
+					result.push(x);
+					result.push(splines[j](x));
+				}
+				
+				j++;
+			}
+
+			//add last point
+			result.push(points[points.length - ps]);
+			result.push(points[points.length - ps + yPos]);
+
+			return result;
+		}
+
+
+
+		function createHermiteSplines(datapoints, curvedLinesOptions, yPos) {
+			var points = datapoints.points;
+			var ps = datapoints.pointsize;
+			
+			// Get consecutive differences and slopes
+			var dxs = [];
+			var dys = [];
+			var ms = [];
+
+			for (var i = 0; i < points.length - ps; i += ps) {
+				var curX = i;
+				var curY = i + yPos;			
+				var dx = points[curX + ps] - points[curX];
+				var dy = points[curY + ps] - points[curY];
+							
+				dxs.push(dx);
+				dys.push(dy);
+				ms.push(dy / dx);
+			}
+
+			// Get degree-1 coefficients
+			var c1s = [ms[0]];
+			if (curvedLinesOptions.monotonicFit) {
+				// Fritsch Carlson
+				for (var i = 0; i < dxs.length - 1; i++) {
+					var m = ms[i];
+					var mNext = ms[i + 1];
+					if (m * mNext <= 0) {
+						c1s.push(0);
+					} else {
+						var dx = dxs[i];
+						var dxNext = dxs[i + 1];
+						var common = dx + dxNext;
+						c1s.push(3 * common / ((common + dxNext) / m + (common + dx) / mNext));
+					}
+				}
+			} else {
+				// Cardinal spline with t € [0,1]
+				// Catmull-Rom for t = 0
+				for (var i = ps; i < points.length - ps; i += ps) {
+					var curX = i;
+					var curY = i + yPos;	
+					c1s.push(curvedLinesOptions.tension * (points[curX + ps] - points[curY - ps]) / (points[curX + ps] - points[curX - ps]));
+				}
+			}
+			c1s.push(ms[ms.length - 1]);
+
+			// Get degree-2 and degree-3 coefficients
+			var c2s = [], c3s = [];
+			for ( i = 0; i < c1s.length - 1; i++) {
+				var c1 = c1s[i];
+				var m = ms[i];
+				var invDx = 1 / dxs[i];
+				var common = c1 + c1s[i + 1] - m - m;
+				c2s.push((m - c1 - common) * invDx);
+				c3s.push(common * invDx * invDx);
+			}
+
+			//create functions with captured parameters
+			var ret = [];
+			for (var i = 0; i < c1s.length - 1; i ++) {
+				var spline = function (x0, a, b, c, d) {
+					// spline for a segment
+					return function (x) {									
+						var diff = x - x0;
+						var diffSq = diff * diff;
+						return a * diff + b * diffSq + c * diff * diffSq + d;
+					};
+				};			
+		
+				ret.push(spline(points[i * ps], c1s[i], c2s[i], c3s[i], points[i * ps + yPos]));
+			}
+			
+			return ret;
+		};
 
 		//no real idea whats going on here code mainly from https://code.google.com/p/flot/issues/detail?id=226
 		//if fit option is selected additional datapoints get inserted before the curve calculations in nergal.dev s code.
 		function calculateLegacyCurvePoints(datapoints, curvedLinesOptions, yPos) {
 
-			var points = datapoints.points, ps = datapoints.pointsize;
+			var points = datapoints.points;
+			var ps = datapoints.pointsize;
 			var num = Number(curvedLinesOptions.curvePointFactor) * (points.length / ps);
 
 			var xdata = new Array;
@@ -329,7 +447,7 @@
 		init : init,
 		options : options,
 		name : 'curvedLines',
-		version : '1.0.0'
+		version : '1.1.0'
 	});
 
 })(jQuery);

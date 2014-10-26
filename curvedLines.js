@@ -178,7 +178,7 @@
 		function calculateLegacyCurvePoints(datapoints, curvedLinesOptions, yPos) {
 
 			var points = datapoints.points, ps = datapoints.pointsize;
-			var num = curvedLinesOptions.curvePointFactor * (points.length / ps);
+			var num = Number(curvedLinesOptions.curvePointFactor) * (points.length / ps);
 
 			var xdata = new Array;
 			var ydata = new Array;
@@ -200,7 +200,7 @@
 					//x range / (estimated pixel length of placeholder * factor)
 				} else {
 					//use user defined value
-					fpDist = curvedLinesOptions.fitPointDist;
+					fpDist = Number(curvedLinesOptions.fitPointDist);
 				}
 
 				for (var i = 0; i < points.length; i += ps) {

@@ -9,17 +9,20 @@
 		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.stack.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../flot/jquery.flot.navigate.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../curvedLines.js"></script>
+		<script language="JavaScript" type="text/javascript" src="_TestSetup.js"></script>
+		<link rel="stylesheet" type="text/css" href="_TestSetup.css"></link>
 	</head>
 	<body>
-		<div class="demo-container">
-			<div id="placeholder" style="height: 200px; width: 400px;" class="demo-placeholder"></div>
-			<div id="placeholder2" style="height: 200px; width: 400px;" class="demo-placeholder"></div>
-		</div>
+
+		<div id="placeholder" style="height: 300px; width: 600px;"></div>
+		<div id="placeholder2" style="height: 300px; width: 600px;"></div>
+		<div id="parameters" style="width: 800"></div>
+
 		<script id="source" language="javascript" type="text/javascript">
 		
 		
 $(function() {
-    
+	//data
     var d1 = [];
     for (var i = 0; i <= 10; i += 1) {
         d1.push([i, parseInt(Math.random() * 30)]);}
@@ -31,30 +34,38 @@ $(function() {
     var d3 = [];
     for (var i = 0; i <= 10; i += 1) {
         d3.push([i, parseInt(Math.random() * 30)]);}
+
+    //curved line paramters
+    var defaultParameters = {
+		apply : true,
+		legacyOverride : {fit: true}
+	}
     
+    //plot function
     $.plot("#placeholder", [ d1, d2, d3 ], {
         series: { stack: true,
                  lines: {show: true, fill: true, },
                 }
     });
-
     
-    $.plot("#placeholder2", 
+    function replot(parameters) {
+		$.plot($("#placeholder2"),
            [
-               {data: d1, lines: { show: true, fill: true }, stack: true, curvedLines: {apply: true}},
-               {data: d2, lines: { show: true, fill: true }, stack: true, curvedLines: {apply: true}},
-               {data: d3, lines: { show: true, fill: true }, stack: true, curvedLines: {apply: true}},
+               {data: d1, lines: { show: true, fill: true }, stack: true, curvedLines: parameters},
+               {data: d2, lines: { show: true, fill: true }, stack: true, curvedLines: parameters},
+               {data: d3, lines: { show: true, fill: true }, stack: true, curvedLines: parameters},
            ],
-               {
+           {
                series: {
-                       curvedLines: {
-                       				  active: true, 
-                       				  apply: true,
-                       				  legacyOverride : { fit: true }
+               	        curvedLines: {
+                					active: true
                        				}
                }
-           }
-	);
+           });
+	}
+    
+	//combine everything
+	TestSetup($("#parameters"), defaultParameters, [replot])
     
 });
 

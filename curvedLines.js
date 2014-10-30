@@ -20,11 +20,10 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
- */
+*/
 
 /*
-
- ____________________________________________________
+____________________________________________________
 
  what it is:
  ____________________________________________________
@@ -35,7 +34,7 @@
 
  => 1) with large data sets you may get trouble
  => 2) if you want to display the points too, you have to plot them as 2nd data series over the lines
- && 3) consecutive x data points are not allowed to have the same value
+ => 3) consecutive x data points are not allowed to have the same value
 
  Feel free to further improve the code
 
@@ -48,7 +47,7 @@
 
  var options = { series: { curvedLines: {  active: true }}};
 
- $.plot($("#placeholder"), [{data = d1, lines: { show: true}, curvedLines: {apply: true}}], options);
+ $.plot($("#placeholder"), [{data: d1, lines: { show: true}, curvedLines: {apply: true}}], options);
 
  _____________________________________________________
 
@@ -57,17 +56,21 @@
 
  active:           bool true => plugin can be used
  apply:            bool true => series will be drawn as curved line
+ monotonicFit:	   bool true => uses monotone cubic interpolation (preserve monotonicity)
+ tension:          int          defines the tension parameter of the hermite spline interpolation (no effect if monotonicFit is set)
+ nrSplinePoints:   int 			defines the number of sample points (of the spline) in between two consecutive points
 
  deprecated options from flot prior to 1.0.0:
  ------------------------------------------------
- legacyOverride	   bool true => use old default   OR
+ legacyOverride	   bool true => use old default
+    OR
  legacyOverride    optionArray
  {
- fit:              bool true => forces the max,mins of the curve to be on the datapoints
- curvePointFactor  int  		   defines how many "virtual" points are used per "real" data point to
- emulate the curvedLines (points total = real points * curvePointFactor)
- fitPointDist:     int  		   defines the x axis distance of the additional two points that are used
- }						   		   to enforce the min max condition.
+ 	fit: 	             bool true => forces the max,mins of the curve to be on the datapoints
+ 	curvePointFactor	 int  		  defines how many "virtual" points are used per "real" data point to
+ 									  emulate the curvedLines (points total = real points * curvePointFactor)
+ 	fitPointDist: 	     int  		  defines the x axis distance of the additional two points that are used
+ }						   		   	  to enforce the min max condition.
  */
 
 /*
@@ -83,6 +86,7 @@
  *  v0.6.x changed versioning schema
  *
  *  v1.0.0 API Break marked existing implementation/options as deprecated
+ *  v1.1.0 added the new curved line calculations based on hermite splines
  */
 
 (function($) {
@@ -93,7 +97,7 @@
 				active : false,
 				apply : false,
 				monotonicFit : false,
-				tension : 0.0,
+				tension : 0.5,
 				nrSplinePoints : 20,
 				legacyOverride : undefined
 			}
@@ -214,14 +218,19 @@
 
 
 
+		// Creates an array of splines, one for each segment of the original curve. Algorithm based on the wikipedia articles: 
+		//
+		// http://de.wikipedia.org/w/index.php?title=Kubisch_Hermitescher_Spline&oldid=130168003 and 
+		// http://en.wikipedia.org/w/index.php?title=Monotone_cubic_interpolation&oldid=622341725 and the description of Fritsch-Carlson from
+		// http://math.stackexchange.com/questions/45218/implementation-of-monotone-cubic-interpolation
+		// for a detailed description see https://github.com/MichaelZinsmaier/CurvedLines/docu
 		function createHermiteSplines(datapoints, curvedLinesOptions, yPos) {
 			var points = datapoints.points;
 			var ps = datapoints.pointsize;
 			
-			// Get consecutive differences and slopes
-			var dxs = [];
-			var dys = [];
-			var ms = [];
+			// preparation get length (x_{k+1} - x_k) and slope s=(p_{k+1} - p_k) / (x_{k+1} - x_k) of the segments
+			var segmentLengths = [];
+			var segmentSlopes = [];
 
 			for (var i = 0; i < points.length - ps; i += ps) {
 				var curX = i;
@@ -229,25 +238,26 @@
 				var dx = points[curX + ps] - points[curX];
 				var dy = points[curY + ps] - points[curY];
 							
-				dxs.push(dx);
-				dys.push(dy);
-				ms.push(dy / dx);
+				segmentLengths.push(dx);
+				segmentSlopes.push(dy / dx);
 			}
 
-			// Get degree-1 coefficients
-			var c1s = [ms[0]];
+			//get the values for the desired gradients  m_k for all points k
+			//depending on the used method the formula is different
+			var gradients = [segmentSlopes[0]];	
 			if (curvedLinesOptions.monotonicFit) {
 				// Fritsch Carlson
-				for (var i = 0; i < dxs.length - 1; i++) {
-					var m = ms[i];
-					var mNext = ms[i + 1];
-					if (m * mNext <= 0) {
-						c1s.push(0);
+				for (var i = 1; i < segmentLengths.length; i++) {
+					var slope = segmentSlopes[i];
+					var prev_slope = segmentSlopes[i - 1];
+					if (slope * prev_slope <= 0) { // sign(prev_slope) != sign(slpe)
+						gradients.push(0);
 					} else {
-						var dx = dxs[i];
-						var dxNext = dxs[i + 1];
-						var common = dx + dxNext;
-						c1s.push(3 * common / ((common + dxNext) / m + (common + dx) / mNext));
+						var length = segmentLengths[i];
+						var prev_length = segmentLengths[i - 1];
+						var common = length + prev_length;
+						//m = 3 (prev_length + length) / ((2 length + prev_length) / prev_slope + (length + 2 prev_length) / slope)
+						gradients.push(3 * common / ((common + length) / prev_slope + (common + prev_length) / slope));
 					}
 				}
 			} else {
@@ -256,35 +266,38 @@
 				for (var i = ps; i < points.length - ps; i += ps) {
 					var curX = i;
 					var curY = i + yPos;	
-					c1s.push(Number(curvedLinesOptions.tension) * (points[curY + ps] - points[curY - ps]) / (points[curX + ps] - points[curX - ps]));
+					gradients.push(Number(curvedLinesOptions.tension) * (points[curY + ps] - points[curY - ps]) / (points[curX + ps] - points[curX - ps]));
 				}
 			}
-			c1s.push(ms[ms.length - 1]);
+			gradients.push(segmentSlopes[segmentSlopes.length - 1]);
 
-			// Get degree-2 and degree-3 coefficients
-			var c2s = [], c3s = [];
-			for ( i = 0; i < c1s.length - 1; i++) {
-				var c1 = c1s[i];
-				var m = ms[i];
-				var invDx = 1 / dxs[i];
-				var common = c1 + c1s[i + 1] - m - m;
-				c2s.push((m - c1 - common) * invDx);
-				c3s.push(common * invDx * invDx);
+			//get the two major coefficients (c'_{oef1} and c'_{oef2}) for each segment spline
+			var coefs1 = [];
+			var coefs2 = [];
+			for (i = 0; i < segmentLengths.length; i++) {
+				var m_k = gradients[i];
+				var m_k_plus = gradients[i + 1];
+				var slope = segmentSlopes[i];
+				var invLength = 1 / segmentLengths[i];
+				var common = m_k + m_k_plus - slope - slope;
+				
+				coefs1.push(common * invLength * invLength);
+				coefs2.push((slope - common - m_k) * invLength);
 			}
 
-			//create functions with captured parameters
+			//create functions with from the coefficients and capture the parameters
 			var ret = [];
-			for (var i = 0; i < c1s.length - 1; i ++) {
-				var spline = function (x0, a, b, c, d) {
+			for (var i = 0; i < segmentLengths.length; i ++) {
+				var spline = function (x_k, coef1, coef2, coef3, coef4) {
 					// spline for a segment
 					return function (x) {									
-						var diff = x - x0;
+						var diff = x - x_k;
 						var diffSq = diff * diff;
-						return a * diff + b * diffSq + c * diff * diffSq + d;
+						return coef1 * diff * diffSq + coef2 * diffSq + coef3 * diff + coef4;
 					};
 				};			
 		
-				ret.push(spline(points[i * ps], c1s[i], c2s[i], c3s[i], points[i * ps + yPos]));
+				ret.push(spline(points[i * ps], coefs1[i], coefs2[i], gradients[i], points[i * ps + yPos]));
 			}
 			
 			return ret;

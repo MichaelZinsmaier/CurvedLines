@@ -34,9 +34,9 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
 
  active:           bool true => plugin can be used
  apply:            bool true => series will be drawn as curved line
- monotonicFit:	   bool true => uses monotone cubic interpolation (preserve monotonicity)
+ monotonicFit:	    bool true => uses monotone cubic interpolation (preserve monotonicity)
  tension:          int          defines the tension parameter of the hermite spline interpolation (no effect if monotonicFit is set)
- nrSplinePoints:   int 			defines the number of sample points (of the spline) in between two consecutive points
+ nrSplinePoints:   int 			      defines the number of sample points (of the spline) in between two consecutive points
 
  deprecated options from flot prior to 1.0.0:
  ------------------------------------------------
@@ -44,8 +44,9 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
     OR
  legacyOverride    optionArray
  {
- 	fit: 	             bool true => forces the max,mins of the curve to be on the datapoints
- 	curvePointFactor	 int  		  defines how many "virtual" points are used per "real" data point to
- 									  emulate the curvedLines (points total = real points * curvePointFactor)
- 	fitPointDist: 	     int  		  defines the x axis distance of the additional two points that are used
- }						   		   	  to enforce the min max condition.
+ 	 fit: 	             bool true => forces the max,mins of the curve to be on the datapoints
+ 	 curvePointFactor	  int  		      defines how many "virtual" points are used per "real" data point to
+ 	                									        emulate the curvedLines (points total = real points * curvePointFactor)
+  	fitPointDist: 	    int       	 	defines the x axis distance of the additional two points that are used
+  						   		   	                  to enforce the min max condition.
+  }

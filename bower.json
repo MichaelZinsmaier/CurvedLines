@@ -7,7 +7,7 @@
   "license": "MIT",
   "ignore": [
     "**/*",
-    "!curvedlines.js",
+    "!curvedLines.js",
     "!bower.json"
   ],
   "dependencies": {

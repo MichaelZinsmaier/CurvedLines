@@ -41,16 +41,16 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
 | tension        | int  | defines the tension parameter of the hermite spline interpolation (only if monotonicFit = false) |
 | nrSplinePoints | int  | defines the number of sample points (of the spline) in between two consecutive points            |  
 
- deprecated options from flot prior to 1.0.0:
+ deprecated options from curvedLines prior to 1.0.0:
  * * * * * * * * * * * * * * * * * * * * * * * *
 
 | parameter      | type | effect                                                                                                                                      |
 |----------------|------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | legacyOverride | bool | true => use old default                                                                                                                     |
 
-<br></br> 
-or to get more control set legacy as option array with:
-<br></br>
+
+or to get more control set the legacyOverride parameter as option array with:
+
 
 | parameter      | type | effect                                                                                                                                      |
 |----------------|------|---------------------------------------------------------------------------------------------------------------------------------------------|

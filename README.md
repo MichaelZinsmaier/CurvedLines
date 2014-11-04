@@ -54,7 +54,7 @@ or to get more control set a parameter object with the old parameters as members
 |----------------|------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | fit            | bool | true => forces the max,mins of the curve to be on the datapoints                                                                            |
 | curvePointFactor        | int  | defines how many "virtual" points are used per "real" data point to emulate the curvedLines (points total = real points * curvePointFactor) |
-| fitPointDist   | int  | defines the x axis distance of the additional two points that are used to enforce the min max condition.                                    |
+| fitPointDist   | double  | defines the x axis distance of the additional two points that are used to enforce the min max condition.                                    |
 
 ```
  ... lines: { show: true},

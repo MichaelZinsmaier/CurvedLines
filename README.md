@@ -30,14 +30,14 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
  ```
   or 
  ```
-  ... lines: { show: true},
+  ... points: { show: true},
      curvedLines: {
                       apply: true,
                       nrSplinePoints: 30,
                       monotonicFit: true
                    } ...
  ```
-  or ....
+  ....
  
  
  * * * * * * * * * * * * * * * * * * * * * * * *
@@ -52,8 +52,11 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
 | tension        | double  | [0,1] defines the tension parameter of the hermite spline interpolation (only if monotonicFit = false) |
 | nrSplinePoints | int  | defines the number of sample points (of the spline) in between two consecutive points            |  
 
- deprecated options from curvedLines prior to 1.0.0:
- * * * * * * * * * * * * * * * * * * * * * * * *
+### deprecated pre 1.0.0 plotting ###
+ 
+  * * * * * * * * * * * * * * * * * * * * * * * *
+  legacy options:
+  * * * * * * * * * * * * * * * * * * * * * * * *
 
 to use the old curve computation algorithm with default parameters simply set legacyOverride to true
 

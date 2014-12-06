@@ -19,27 +19,22 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
 ### Hands on ###
 
  * * * * * * * * * * * * * * * * * * * * * * * *
+ examples:
+ * * * * * * * * * * * * * * * * * * * * * * * * 
+ http://jsfiddle.net/p55d7bk8/2/  <- random data example <br>
+ http://jsfiddle.net/yqsb8mdc/2/  <- nrSplinePoints parameter <br>
+ http://jsfiddle.net/jd9q53fw/2/  <- fit parameters <br>
+ http://jsfiddle.net/n0600qo4/2/  <- legacy example <br>
+
+ * * * * * * * * * * * * * * * * * * * * * * * *
  how to use it:
  * * * * * * * * * * * * * * * * * * * * * * * * 
 ```
   ... lines: { show: true},
      curvedLines: {
                       apply: true,
-                      tension: 1
                    } ...
  ```
-  or 
- ```
-  ... points: { show: true},
-     curvedLines: {
-                      apply: true,
-                      nrSplinePoints: 30,
-                      monotonicFit: true
-                   } ...
- ```
-  ....
- 
- 
  * * * * * * * * * * * * * * * * * * * * * * * *
  options:
  * * * * * * * * * * * * * * * * * * * * * * * * 

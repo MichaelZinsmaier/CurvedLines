@@ -22,10 +22,23 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
  how to use it:
  * * * * * * * * * * * * * * * * * * * * * * * * 
 ```
- var d1 = [[5,5],[7,3],[9,12]];
- var options = { series: { curvedLines: {  active: true }}};
- $.plot($("#placeholder"), [{data: d1, lines: { show: true}, curvedLines: {apply: true}}], options);
-```
+  ... lines: { show: true},
+     curvedLines: {
+                      apply: true,
+                      tension: 1
+                   } ...
+ ```
+  or 
+ ```
+  ... lines: { show: true},
+     curvedLines: {
+                      apply: true,
+                      nrSplinePoints: 30,
+                      monotonicFit: true
+                   } ...
+ ```
+  or ....
+ 
  
  * * * * * * * * * * * * * * * * * * * * * * * *
  options:

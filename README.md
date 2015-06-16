@@ -29,6 +29,11 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
  * * * * * * * * * * * * * * * * * * * * * * * *
  how to use it:
  * * * * * * * * * * * * * * * * * * * * * * * * 
+ 
+##### Data: #####
+ CurvedLines assumes x<sub>i</sub> < x<sub>i+1</sub> that is x values must be ordered from smallest to largest and must be unique.
+ 
+##### Config: ######
 ```
   ... lines: { show: true},
      curvedLines: {

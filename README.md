@@ -24,6 +24,7 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
  http://jsfiddle.net/p55d7bk8/2/  <- random data example <br>
  http://jsfiddle.net/yqsb8mdc/2/  <- nrSplinePoints parameter <br>
  http://jsfiddle.net/jd9q53fw/2/  <- fit parameters <br>
+ https://jsfiddle.net/L0kgfytv/   <- advanced usage <br>
  http://jsfiddle.net/n0600qo4/2/  <- legacy example <br>
 
  * * * * * * * * * * * * * * * * * * * * * * * *

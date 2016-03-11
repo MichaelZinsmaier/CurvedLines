@@ -53,6 +53,17 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
 | tension        | double  | [0,1] defines the tension parameter of the hermite spline interpolation (only if monotonicFit = false) |
 | nrSplinePoints | int  | defines the number of sample points (of the spline) in between two consecutive points            |  
 
+ 
+##### Versioning and Linking #####
+ 
+CurvedLines is listed at [bower.io](http://bower.io/search/?q=flot.curvedlines). Releases are marked in GitHub
+ 
+The following snippet uses RawGit as CDN to include CurvedLines
+**Before copy pasting this please check the terms and conditions at [RawGit](https://rawgit.com/)!** 
+````
+<script src="https://cdn.rawgit.com/MichaelZinsmaier/CurvedLines/1.1.1/curvedLines.js"></script>
+````
+
 ### deprecated pre 1.0.0 plotting ###
  
   * * * * * * * * * * * * * * * * * * * * * * * *

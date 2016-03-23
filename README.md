@@ -58,10 +58,15 @@ The old fit option has been replaced with monotonicFit, which if set, enforces t
  
 CurvedLines is listed at [bower.io](http://bower.io/search/?q=flot.curvedlines). Releases are marked in GitHub
  
-The following snippet uses RawGit as CDN to include CurvedLines
+The following snippet uses RawGit as CDN to include CurvedLines and loads a local copy as fallback.
 **Before copy pasting this please check the terms and conditions at [RawGit](https://rawgit.com/)!** 
 ````
 <script src="https://cdn.rawgit.com/MichaelZinsmaier/CurvedLines/1.1.1/curvedLines.js"></script>
+
+<script>
+  $.plot.plugins.find(function(element){return element.name == "curvedLines"}) || 
+  document.write('<script src="[server_local_copy]"><\/script>');
+</script>
 ````
 
 ### deprecated pre 1.0.0 plotting ###

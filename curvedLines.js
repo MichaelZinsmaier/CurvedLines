@@ -205,10 +205,13 @@ ____________________________________________________
 				result.push(points[curX]);
 				result.push(points[curY]);
 
-				//add curve point
-				for (var x = (xStart += xStep); x < xEnd; x += xStep) {
-					result.push(x);
-					result.push(splines[j](x));
+				//add curve point; skip between nulls
+				if (typeof points[curX] === 'number' && typeof points[curY] === 'number'
+					&& typeof points[curX + ps] === 'number' && typeof points[curY + ps] === 'number') {
+					for (var x = (xStart += xStep); x < xEnd; x += xStep) {
+						result.push(x);
+						result.push(splines[j](x));
+					}
 				}
 				
 				j++;

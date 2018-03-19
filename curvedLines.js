@@ -167,7 +167,43 @@ ____________________________________________________
 			}
 		}
 
+		// split input data at datapoints with "null" values for x or y coordinate
 		function calculateCurvePoints(datapoints, curvedLinesOptions, yPos) {
+			var start = 0;
+		    var slicing = false;
+			var points = datapoints.points;
+			var pointSize = datapoints.pointsize;
+            var result = [];
+
+			for (var i = 0; i < points.length; i += pointSize) {
+				if (typeof points[i] === 'number' && typeof points[i + yPos] === 'number') {			
+					if (!slicing) {
+						slicing = true;
+						start = i;
+					}	
+				} else {
+					if (slicing) {
+						// a slice ends
+						slicing = false;
+						var slice = points.slice(start, i);
+						result = result.concat(calculateCurvePointsSlice(slice, pointSize, curvedLinesOptions, yPos));
+					}
+					
+					// ensure that even defective points are included => line segment rendering
+					result = result.concat(points.slice(i, i + pointSize))					
+				}
+			}
+
+			// last slice ends
+			if (slicing) {
+				var slice = points.slice(start, points.length);
+				result = result.concat(calculateCurvePointsSlice(slice, pointSize, curvedLinesOptions, yPos));
+			}			
+
+			return result;
+		}
+		
+		function calculateCurvePointsSlice(points, pointSize, curvedLinesOptions, yPos) {
 			if ( typeof curvedLinesOptions.legacyOverride != 'undefined' && curvedLinesOptions.legacyOverride != false) {
 				var defaultOptions = {
 					fit : false,
@@ -175,30 +211,28 @@ ____________________________________________________
 					fitPointDist : undefined
 				};
 				var legacyOptions = jQuery.extend(defaultOptions, curvedLinesOptions.legacyOverride);
-				return calculateLegacyCurvePoints(datapoints, legacyOptions, yPos);
+				return calculateLegacyCurvePoints(points, pointSize, legacyOptions, yPos);
 			}
 
-			return calculateSplineCurvePoints(datapoints, curvedLinesOptions, yPos);
+			return calculateSplineCurvePoints(points, pointSize, curvedLinesOptions, yPos);		
 		}
 
-		function calculateSplineCurvePoints(datapoints, curvedLinesOptions, yPos) {
-			var points = datapoints.points;
-			var ps = datapoints.pointsize;
-			
+
+		function calculateSplineCurvePoints(points, pointSize, curvedLinesOptions, yPos) {	
 			//create interpolant fuction
-			var splines = createHermiteSplines(datapoints, curvedLinesOptions, yPos);
+			var splines = createHermiteSplines(points, pointSize, curvedLinesOptions, yPos);
 			var result = [];
 
 			//sample the function
 			// (the result is intependent from the input data =>
 			//	it is ok to alter the input after this method)
 			var j = 0;
-			for (var i = 0; i < points.length - ps; i += ps) {
+			for (var i = 0; i < points.length - pointSize; i += pointSize) {
 				var curX = i;
 				var curY = i + yPos;	
 				
 				var xStart = points[curX];
-				var xEnd = points[curX + ps];
+				var xEnd = points[curX + pointSize];
 				var xStep = (xEnd - xStart) / Number(curvedLinesOptions.nrSplinePoints);
 
 				//add point
@@ -215,8 +249,8 @@ ____________________________________________________
 			}
 
 			//add last point
-			result.push(points[points.length - ps]);
-			result.push(points[points.length - ps + yPos]);
+			result.push(points[points.length - pointSize]);
+			result.push(points[points.length - pointSize + yPos]);
 
 			return result;
 		}
@@ -229,19 +263,17 @@ ____________________________________________________
 		// http://en.wikipedia.org/w/index.php?title=Monotone_cubic_interpolation&oldid=622341725 and the description of Fritsch-Carlson from
 		// http://math.stackexchange.com/questions/45218/implementation-of-monotone-cubic-interpolation
 		// for a detailed description see https://github.com/MichaelZinsmaier/CurvedLines/docu
-		function createHermiteSplines(datapoints, curvedLinesOptions, yPos) {
-			var points = datapoints.points;
-			var ps = datapoints.pointsize;
+		function createHermiteSplines(points, pointSize, curvedLinesOptions, yPos) {
 			
 			// preparation get length (x_{k+1} - x_k) and slope s=(p_{k+1} - p_k) / (x_{k+1} - x_k) of the segments
 			var segmentLengths = [];
 			var segmentSlopes = [];
 
-			for (var i = 0; i < points.length - ps; i += ps) {
+			for (var i = 0; i < points.length - pointSize; i += pointSize) {
 				var curX = i;
 				var curY = i + yPos;			
-				var dx = points[curX + ps] - points[curX];
-				var dy = points[curY + ps] - points[curY];
+				var dx = points[curX + pointSize] - points[curX];
+				var dy = points[curY + pointSize] - points[curY];
 							
 				segmentLengths.push(dx);
 				segmentSlopes.push(dy / dx);
@@ -268,10 +300,10 @@ ____________________________________________________
 			} else {
 				// Cardinal spline with t € [0,1]
 				// Catmull-Rom for t = 0
-				for (var i = ps; i < points.length - ps; i += ps) {
+				for (var i = pointSize; i < points.length - pointSize; i += pointSize) {
 					var curX = i;
 					var curY = i + yPos;	
-					gradients.push(Number(curvedLinesOptions.tension) * (points[curY + ps] - points[curY - ps]) / (points[curX + ps] - points[curX - ps]));
+					gradients.push(Number(curvedLinesOptions.tension) * (points[curY + pointSize] - points[curY - pointSize]) / (points[curX + pointSize] - points[curX - pointSize]));
 				}
 			}
 			gradients.push(segmentSlopes[segmentSlopes.length - 1]);
@@ -302,7 +334,7 @@ ____________________________________________________
 					};
 				};			
 		
-				ret.push(spline(points[i * ps], coefs1[i], coefs2[i], gradients[i], points[i * ps + yPos]));
+				ret.push(spline(points[i * pointSize], coefs1[i], coefs2[i], gradients[i], points[i * pointSize + yPos]));
 			}
 			
 			return ret;
@@ -310,11 +342,9 @@ ____________________________________________________
 
 		//no real idea whats going on here code mainly from https://code.google.com/p/flot/issues/detail?id=226
 		//if fit option is selected additional datapoints get inserted before the curve calculations in nergal.dev s code.
-		function calculateLegacyCurvePoints(datapoints, curvedLinesOptions, yPos) {
+		function calculateLegacyCurvePoints(points, pointSize, curvedLinesOptions, yPos) {
 
-			var points = datapoints.points;
-			var ps = datapoints.pointsize;
-			var num = Number(curvedLinesOptions.curvePointFactor) * (points.length / ps);
+     		var num = Number(curvedLinesOptions.curvePointFactor) * (points.length / pointSize);
 
 			var xdata = new Array;
 			var ydata = new Array;
@@ -331,7 +361,7 @@ ____________________________________________________
 				if ( typeof curvedLinesOptions.fitPointDist == 'undefined') {
 					//estimate it
 					var minX = points[0];
-					var maxX = points[points.length - ps];
+					var maxX = points[points.length - pointSize];
 					fpDist = (maxX - minX) / (500 * 100);
 					//x range / (estimated pixel length of placeholder * factor)
 				} else {
@@ -339,7 +369,7 @@ ____________________________________________________
 					fpDist = Number(curvedLinesOptions.fitPointDist);
 				}
 
-				for (var i = 0; i < points.length; i += ps) {
+				for (var i = 0; i < points.length; i += pointSize) {
 
 					var frontX;
 					var backX;
@@ -373,7 +403,7 @@ ____________________________________________________
 				}
 			} else {
 				//just use the datapoints
-				for (var i = 0; i < points.length; i += ps) {
+				for (var i = 0; i < points.length; i += pointSize) {
 					curX = i;
 					curY = i + yPos;
 

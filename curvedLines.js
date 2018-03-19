@@ -167,10 +167,40 @@ ____________________________________________________
 			}
 		}
 
-		
+		// split input data at datapoints with "null" values for x or y coordinate
 		function calculateCurvePoints(datapoints, curvedLinesOptions, yPos) {
-			// typeof points[curX] === 'number'
-			return calculateCurvePointsSlice(datapoints.points, datapoints.pointsize, curvedLinesOptions, yPos)
+			var start = 0;
+		    var slicing = false;
+			var points = datapoints.points;
+			var pointSize = datapoints.pointsize;
+            var result = [];
+
+			for (var i = 0; i < points.length; i += pointSize) {
+				if (typeof points[i] === 'number' && typeof points[i + yPos] === 'number') {			
+					if (!slicing) {
+						slicing = true;
+						start = i;
+					}	
+				} else {
+					if (slicing) {
+						// a slice ends
+						slicing = false;
+						var slice = points.slice(start, i);
+						result = result.concat(calculateCurvePointsSlice(slice, pointSize, curvedLinesOptions, yPos));
+					}
+					
+					// ensure that even defective points are included => line segment rendering
+					result = result.concat(points.slice(i, i + pointSize))					
+				}
+			}
+
+			// last slice ends
+			if (slicing) {
+				var slice = points.slice(start, points.length);
+				result = result.concat(calculateCurvePointsSlice(slice, pointSize, curvedLinesOptions, yPos));
+			}			
+
+			return result;
 		}
 		
 		function calculateCurvePointsSlice(points, pointSize, curvedLinesOptions, yPos) {
@@ -314,7 +344,7 @@ ____________________________________________________
 		//if fit option is selected additional datapoints get inserted before the curve calculations in nergal.dev s code.
 		function calculateLegacyCurvePoints(points, pointSize, curvedLinesOptions, yPos) {
 
-    		var num = Number(curvedLinesOptions.curvePointFactor) * (points.length / pointSize);
+     		var num = Number(curvedLinesOptions.curvePointFactor) * (points.length / pointSize);
 
 			var xdata = new Array;
 			var ydata = new Array;
